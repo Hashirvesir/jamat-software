@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -76,20 +77,22 @@ class MemberController extends Controller
             $data['profile_picture'] = $filename;
         }
 
-        $member = Member::create($data);
+        DB::transaction(function () use ($request, $data) {
+            $member = Member::create($data);
 
-        if ($request->input('is_deceased') && $member->spouse_id) {
-            $spouse = Member::find($member->spouse_id);
-            if ($spouse) {
-                $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
-                $spouse->save();
+            if ($request->input('is_deceased') && $member->spouse_id) {
+                $spouse = Member::find($member->spouse_id);
+                if ($spouse) {
+                    $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
+                    $spouse->save();
+                }
             }
-        }
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'Created member ' . $member->name,
-        ]);
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'Created member ' . $member->name,
+            ]);
+        });
 
         return redirect()->route('members.index')->with('success', 'Member added successfully.');
     }
@@ -155,27 +158,29 @@ class MemberController extends Controller
             $data['profile_picture'] = $filename;
         }
 
-        $oldDeceased = $member->is_deceased;
-        $member->update($data);
+        DB::transaction(function () use ($request, $member, $data) {
+            $oldDeceased = $member->is_deceased;
+            $member->update($data);
 
-        if ($request->input('is_deceased') && !$oldDeceased && $member->spouse_id) {
-            $spouse = Member::find($member->spouse_id);
-            if ($spouse) {
-                $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
-                $spouse->save();
+            if ($request->input('is_deceased') && !$oldDeceased && $member->spouse_id) {
+                $spouse = Member::find($member->spouse_id);
+                if ($spouse) {
+                    $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
+                    $spouse->save();
+                }
+            } elseif (!$request->input('is_deceased') && $oldDeceased && $member->spouse_id) {
+                $spouse = Member::find($member->spouse_id);
+                if ($spouse && $spouse->is_deceased) {
+                    $member->marital_status = $spouse->gender === 'male' ? 'widowed' : 'widower';
+                    $member->save();
+                }
             }
-        } elseif (!$request->input('is_deceased') && $oldDeceased && $member->spouse_id) {
-            $spouse = Member::find($member->spouse_id);
-            if ($spouse && $spouse->is_deceased) {
-                $member->marital_status = $spouse->gender === 'male' ? 'widowed' : 'widower';
-                $member->save();
-            }
-        }
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'Updated member ' . $member->name,
-        ]);
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'Updated member ' . $member->name,
+            ]);
+        });
 
         return redirect()->route('members.index')->with('success', 'Member updated successfully.');
     }
