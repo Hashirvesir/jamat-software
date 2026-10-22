@@ -22,6 +22,14 @@ class Urdu
             static::$arabic = new Arabic();
         }
 
-        return static::$arabic->utf8Glyphs($text);
+        // Pre-normalize Urdu characters so ArPHP's shaping engine recognizes them
+        // in its Arabic contextual tables and joins letters correctly without breaks:
+        $normalized = str_replace(
+            ['ک', 'ہ', 'ھ', 'ۂ', 'ۃ'],
+            ['ك', 'ه', 'ه', 'ة', 'ة'],
+            $text
+        );
+
+        return static::$arabic->utf8Glyphs($normalized);
     }
 }

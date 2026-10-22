@@ -5,8 +5,10 @@
 @section('content')
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0">{{ __('Register with Jamaat Management') }}</h4>
+            <div class="card-header bg-primary text-white text-center py-3">
+                <img src="{{ asset('logo.jpeg') }}" alt="Sindhi Halai Jamat Logo" class="rounded-circle bg-white p-1 shadow-sm mb-2" style="width: 75px; height: 75px; object-fit: contain;">
+                <h4 class="mb-1 fw-bold">Sindhi Halai Jamat</h4>
+                <div class="small text-white-50">{{ __('Register with Jamaat Management') }}</div>
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ route('register') }}">

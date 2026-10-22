@@ -26,5 +26,13 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('urdu', function ($expression) {
             return "<?php echo e(\App\Support\Urdu::shape({$expression})); ?>";
         });
+
+        // Register MpdfPdf as PDF / Mpdf helper
+        if (!class_exists('PDF', false)) {
+            class_alias(\App\Support\MpdfPdf::class, 'PDF');
+        }
+        if (!class_exists('MpdfPDF', false)) {
+            class_alias(\App\Support\MpdfPdf::class, 'MpdfPDF');
+        }
     }
 }

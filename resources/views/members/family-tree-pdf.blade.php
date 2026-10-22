@@ -5,73 +5,64 @@
     <meta charset="UTF-8">
     <title>Family Tree - {{ $member->name }}</title>
     <style>
-        @@font-face {
-            font-family: "Urdu";
-            src: url("{{ str_replace('\\', '/', resource_path('fonts/NotoNaskhArabic.ttf')) }}");
-            font-weight: normal;
-            font-style: normal;
-        }
-
         body {
-            font-family: Arial, sans-serif;
-            margin: 25px;
+            font-family: sans-serif, 'urdu', 'noto';
+            margin: 0;
             color: #222;
+            font-size: 11px;
         }
 
         .urdu {
-            font-family: "Urdu", serif;
-            font-weight: normal;
-            font-style: normal;
+            font-family: 'urdu', 'noto', sans-serif;
         }
 
-        .tag {
-            text-align: center;
-            font-size: 22px;
-            color: #1b5e3f;
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #1b5e3f;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .org-title {
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 2px;
+            color: #1b5e3f;
+            letter-spacing: 0.5px;
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 14px;
+        .doc-subtitle {
+            font-size: 12px;
             color: #8a6d1f;
-            margin-bottom: 6px;
+            margin-top: 3px;
         }
 
-        .meta {
-            text-align: right;
+        .meta-info {
             font-size: 10px;
-            color: #888;
-            margin-bottom: 14px;
+            color: #555;
+            line-height: 1.4;
         }
 
         .info-box {
             border: 1px solid #c9a227;
             border-radius: 6px;
-            padding: 10px 16px;
-            margin-bottom: 20px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
             background: #fbf8f0;
-        }
-
-        .info-box h3 {
-            margin: 0 0 8px 0;
-            color: #1b5e3f;
-            font-size: 16px;
         }
 
         .info-box table {
             width: 100%;
-            font-size: 12px;
+            font-size: 11px;
+            border-collapse: collapse;
         }
 
         .info-box td {
             border: none;
-            padding: 2px 0;
+            padding: 3px 0;
         }
 
         .tree-wrapper {
-            font-size: 12px;
+            font-size: 11px;
         }
 
         ul.tree {
@@ -131,34 +122,70 @@
 </head>
 
 <body>
-    <div class="tag">SINDHI HALAI JAMAT</div>
-    <div class="subtitle">Family Tree Report &nbsp;|&nbsp; <span class="urdu">@urdu('خاندانی شجرہ')</span></div>
-    <div class="meta">Generated on {{ now()->format('d M Y, h:i A') }}</div>
+    <!-- Header -->
+    <table class="header-table">
+        <tr>
+            <td width="60" style="vertical-align: middle;">
+                <img src="{{ public_path('logo.jpeg') }}" style="width: 52px; height: 52px; border-radius: 50%;" alt="Logo">
+            </td>
+            <td style="vertical-align: middle; padding-left: 10px;">
+                <div class="org-title">SINDHI HALAI JAMAT</div>
+                <div class="doc-subtitle">
+                    Family Tree Report &nbsp;|&nbsp; <span class="urdu">خاندانی شجرہ نسب</span>
+                </div>
+            </td>
+            <td style="text-align: right; vertical-align: middle;">
+                <div class="meta-info"><strong>Generated:</strong> {{ now()->format('d M Y, h:i A') }}</div>
+                <div class="meta-info"><strong>Membership No:</strong> {{ $member->membership_number ?? ('#' . $member->id) }}</div>
+            </td>
+        </tr>
+    </table>
 
+    <!-- Member Summary Box -->
     <div class="info-box">
-        <h3>{{ $member->name }}</h3>
+        <h3 style="margin: 0 0 6px 0; color: #1b5e3f; font-size: 15px;">{{ $member->name }}</h3>
         <table>
             <tr>
-                <td><strong>{{ $member->cnic ? 'CNIC' : 'B-Form No.' }}</strong> <span class="urdu">{{ \App\Support\Urdu::shape($member->cnic ? 'شناختی کارڈ نمبر' : 'بی فارم نمبر') }}</span>:
-                    {{ $member->cnic ?? $member->b_form_number ?? 'N/A' }}</td>
-                <td><strong>Community</strong> <span class="urdu">@urdu('برادری')</span>: {{ $member->community->name }}</td>
+                <td width="50%">
+                    <strong>CNIC / <span class="urdu">شناختی کارڈ</span>:</strong> {{ $member->cnic ?? 'N/A' }}
+                </td>
+                <td width="50%">
+                    <strong>Community / <span class="urdu">برادری</span>:</strong> {{ $member->community->name }}
+                </td>
             </tr>
             <tr>
-                <td><strong>Gender</strong> <span class="urdu">@urdu('جنس')</span>: {{ ucfirst($member->gender) }}</td>
-                <td><strong>Member Type</strong>: {{ ucwords(str_replace('_', ' ', $member->member_type)) }}</td>
+                <td>
+                    <strong>B-Form / <span class="urdu">ب فارم</span>:</strong> {{ $member->b_form_number ?? 'N/A' }}
+                </td>
+                <td>
+                    <strong>Member Type / <span class="urdu">ممبر کی قسم</span>:</strong>
+                    {{ ucwords(str_replace('_', ' ', $member->member_type)) }} (<span class="urdu">{{ match($member->member_type) { 'householder' => 'سربراہِ خاندان', 'family_member' => 'خاندان کا فرد', 'child' => 'بچہ', 'spouse' => 'شریکِ حیات', default => ucfirst(str_replace('_', ' ', $member->member_type)) } }}</span>)
+                </td>
             </tr>
             <tr>
-                <td><strong>Marital Status</strong> <span class="urdu">@urdu('ازدواجی حیثیت')</span>: {{ ucfirst($member->marital_status) }}</td>
-                <td><strong>Date of Birth</strong> <span class="urdu">@urdu('تاریخ پیدائش')</span>: {{ $member->date_of_birth ?? 'N/A' }}</td>
+                <td>
+                    <strong>Gender / <span class="urdu">جنس</span>:</strong>
+                    {{ ucfirst($member->gender) }} (<span class="urdu">{{ $member->gender === 'male' ? 'مرد' : ($member->gender === 'female' ? 'عورت' : 'دیگر') }}</span>)
+                </td>
+                <td>
+                    <strong>Marital Status / <span class="urdu">ازدواجی حیثیت</span>:</strong>
+                    {{ ucfirst($member->marital_status) }} (<span class="urdu">{{ match($member->marital_status) { 'single' => 'غیر شادی شدہ', 'married' => 'شادی شدہ', 'divorced' => 'طلاق یافتہ', 'widowed' => 'بیوہ', default => ucfirst($member->marital_status) } }}</span>)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <strong>Date of Birth / <span class="urdu">تاریخِ پیدائش</span>:</strong> {{ $member->date_of_birth ?? 'N/A' }}
+                </td>
             </tr>
         </table>
     </div>
 
+    <!-- Tree Structure -->
     <div class="tree-wrapper">
         @if ($treeData)
             @include('members.partials.tree-node', ['node' => $treeData, 'root' => true])
         @else
-            <p>No family relationships found for {{ $member->name }}.</p>
+            <p>No family relationships found for {{ $member->name }}. / <span class="urdu">کوئی خاندانی تعلق نہیں ملا۔</span></p>
         @endif
     </div>
 </body>

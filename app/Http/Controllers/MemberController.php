@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Support\MpdfPdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -40,9 +41,14 @@ class MemberController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|unique:members,email',
-            'phone' => 'nullable|digits:11',
+            'phone' => 'nullable|string|max:20',
             'gender' => 'required|in:male,female,other',
-            'cnic' => 'nullable|regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/|unique:members,cnic|required_without:b_form_number',
+            'cnic' => [
+                'nullable',
+                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
+                'unique:members,cnic',
+                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->b_form_number)),
+            ],
             'marital_status' => 'required|in:single,married,divorced,widowed,widower',
             'community_id' => 'required|exists:communities,id',
             'member_type' => 'required|in:householder,non_householder,child,sibling',
@@ -54,9 +60,13 @@ class MemberController extends Controller
             'profile_picture' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'card_received' => 'nullable|integer',
-            'b_form_number' => 'nullable|regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/|required_without:cnic',
+            'b_form_number' => [
+                'nullable',
+                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
+                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->cnic)),
+            ],
             'country' => 'required|in:Pakistan,India,United States,United Kingdom,Canada,Australia,Germany,France,China,Japan',
-            'death_date' => 'nullable|date|required_if:is_deceased,1',
+            'death_date' => 'nullable|date',
             'education' => 'required|string',
             'skill' => 'required|string',
             'membership_number' => 'nullable|string|max:50|unique:members,membership_number',
@@ -118,9 +128,14 @@ class MemberController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|unique:members,email,' . $member->id,
-            'phone' => 'nullable|digits:11',
+            'phone' => 'nullable|string|max:20',
             'gender' => 'required|in:male,female,other',
-            'cnic' => 'nullable|regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/|unique:members,cnic,' . $member->id . '|required_without:b_form_number',
+            'cnic' => [
+                'nullable',
+                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
+                Rule::unique('members', 'cnic')->ignore($member->id),
+                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->b_form_number)),
+            ],
             'marital_status' => 'required|in:single,married,divorced,widowed,widower',
             'community_id' => 'required|exists:communities,id',
             'member_type' => 'required|in:householder,non_householder,child,sibling',
@@ -132,9 +147,13 @@ class MemberController extends Controller
             'profile_picture' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
             'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'card_received' => 'nullable|integer',
-            'b_form_number' => 'nullable|regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/|required_without:cnic',
+            'b_form_number' => [
+                'nullable',
+                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
+                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->cnic)),
+            ],
             'country' => 'required|in:Pakistan,India,United States,United Kingdom,Canada,Australia,Germany,France,China,Japan',
-            'death_date' => 'nullable|date|required_if:is_deceased,1',
+            'death_date' => 'nullable|date',
             'education' => 'required|string',
             'skill' => 'required|string',
             'membership_number' => 'nullable|string|max:50|unique:members,membership_number,' . $member->id,
@@ -236,52 +255,22 @@ class MemberController extends Controller
     public function downloadPdf(Member $member)
     {
         $member = Member::with(['community', 'parent', 'spouse', 'children'])->findOrFail($member->id);
-        $pdf = Pdf::loadView('members.pdf', compact('member'));
+        $pdf = MpdfPdf::loadView('members.pdf', compact('member'));
         return $pdf->download('member-details-' . $member->id . '.pdf');
     }
 
     public function downloadCard(Member $member)
     {
         $member = Member::with('community')->findOrFail($member->id);
-
-        // Front and back are rendered as separate PDFs and merged with FPDI.
-        // Dompdf's Cpdf backend misbehaves at this tiny (CR80) paper size when
-        // a document needs more than one page, so each side must stay a
-        // single logical page; see the page-1-only import below.
-        $frontPath = tempnam(sys_get_temp_dir(), 'card_front_') . '.pdf';
-        $backPath = tempnam(sys_get_temp_dir(), 'card_back_') . '.pdf';
-
-        file_put_contents($frontPath, Pdf::loadView('members.card-front-pdf', ['member' => $member])
-            ->setPaper([0, 0, 243, 153])
-            ->output());
-        file_put_contents($backPath, Pdf::loadView('members.card-back-pdf', ['member' => $member])
-            ->setPaper([0, 0, 243, 153])
-            ->output());
-
-        // Only page 1 of each source is used: at this tiny paper size,
-        // Dompdf's Cpdf backend appends a spurious blank trailing page even
-        // when all content fits on a single page.
-        $fpdi = new \setasign\Fpdi\Fpdi('L', 'pt', [243, 153]);
-        foreach ([$frontPath, $backPath] as $path) {
-            $fpdi->setSourceFile($path);
-            $fpdi->AddPage();
-            $fpdi->useTemplate($fpdi->importPage(1));
-        }
-
-        unlink($frontPath);
-        unlink($backPath);
-
-        return response($fpdi->Output('S'), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="member-card-' . $member->id . '.pdf"',
-        ]);
+        $pdf = MpdfPdf::loadCard('members.card-pdf', compact('member'));
+        return $pdf->download('member-card-' . $member->id . '.pdf');
     }
 
     public function downloadFamilyTreePdf(Member $member)
     {
         $member = Member::with(['parent', 'spouse', 'children'])->findOrFail($member->id);
         $treeData = $this->buildTreeData($member);
-        $pdf = Pdf::loadView('members.family-tree-pdf', compact('member', 'treeData'));
+        $pdf = MpdfPdf::loadView('members.family-tree-pdf', compact('member', 'treeData'));
         return $pdf->download('family-tree-' . $member->id . '.pdf');
     }
 
@@ -341,15 +330,28 @@ class MemberController extends Controller
 
   
 
+    protected function memberTypeUrdu(string $type): string
+    {
+        return match ($type) {
+            'householder' => 'سربراہِ خاندان',
+            'family_member' => 'خاندان کا فرد',
+            'non_householder' => 'غیر سربراہ',
+            'child' => 'بچہ',
+            'spouse' => 'شریکِ حیات',
+            'sibling' => 'بہن بھائی',
+            default => ucfirst(str_replace('_', ' ', $type)),
+        };
+    }
+
     protected function memberIdentifier(Member $person): string
     {
         if ($person->cnic) {
-            return 'CNIC: ' . $person->cnic;
+            return 'CNIC / شناختی کارڈ: ' . $person->cnic;
         }
         if ($person->b_form_number) {
-            return 'B-Form: ' . $person->b_form_number;
+            return 'B-Form / ب فارم: ' . $person->b_form_number;
         }
-        return 'No CNIC/B-Form';
+        return 'No CNIC/B-Form / کوئی شناختی کارڈ یا ب فارم نہیں';
     }
 
     protected function buildTreeData(Member $member, $visited = [], $relation = 'Member')
@@ -361,10 +363,18 @@ class MemberController extends Controller
         $visited[] = $member->id;
 
         $nodeId = 'member_' . $member->id;
+        $typeLabel = ucfirst(str_replace('_', ' ', $member->member_type)) . ' / ' . $this->memberTypeUrdu($member->member_type);
+        $relationPrefix = match ($relation) {
+            'Child' => 'Child / بچہ: ',
+            'Parent' => 'Parent / والدین: ',
+            'Spouse' => 'Spouse / شریکِ حیات: ',
+            'Sibling' => 'Sibling / بہن بھائی: ',
+            default => '',
+        };
 
         $node = [
             'id' => $nodeId,
-            'text' => $member->name . ' (' . ucfirst($member->member_type) . ') — ' . $this->memberIdentifier($member),
+            'text' => $relationPrefix . $member->name . ' (' . $typeLabel . ') — ' . $this->memberIdentifier($member),
             'state' => ['opened' => true],
             'children' => [],
             'type' => $member->member_type,
@@ -378,9 +388,10 @@ class MemberController extends Controller
 
         if ($member->spouse && !in_array('spouse_' . $member->spouse->id, $addedNodes)) {
             $spouse = $member->spouse;
+            $spouseType = ucfirst(str_replace('_', ' ', $spouse->member_type)) . ' / ' . $this->memberTypeUrdu($spouse->member_type);
             $node['children'][] = [
                 'id' => 'spouse_' . $spouse->id . '_' . $member->id,
-                'text' => 'Spouse: ' . $spouse->name . ' (' . ucfirst($spouse->member_type) . ') — ' . $this->memberIdentifier($spouse),
+                'text' => 'Spouse / شریکِ حیات: ' . $spouse->name . ' (' . $spouseType . ') — ' . $this->memberIdentifier($spouse),
                 'type' => 'spouse',
                 'relation' => 'Spouse',
                 'icon' => 'jstree-file',
@@ -405,9 +416,10 @@ class MemberController extends Controller
             : collect();
         foreach ($siblings as $sibling) {
             if (!in_array('sibling_' . $sibling->id, $addedNodes)) {
+                $siblingType = ucfirst(str_replace('_', ' ', $sibling->member_type)) . ' / ' . $this->memberTypeUrdu($sibling->member_type);
                 $node['children'][] = [
                     'id' => 'sibling_' . $sibling->id . '_' . $member->id,
-                    'text' => 'Sibling: ' . $sibling->name . ' (' . ucfirst($sibling->member_type) . ') — ' . $this->memberIdentifier($sibling),
+                    'text' => 'Sibling / بہن بھائی: ' . $sibling->name . ' (' . $siblingType . ') — ' . $this->memberIdentifier($sibling),
                     'type' => 'sibling',
                     'relation' => 'Sibling',
                     'icon' => 'jstree-file',
@@ -429,9 +441,10 @@ class MemberController extends Controller
             }
             if (!$isParentTopLevel) {
                 $parent = $member->parent;
+                $parentType = ucfirst(str_replace('_', ' ', $parent->member_type)) . ' / ' . $this->memberTypeUrdu($parent->member_type);
                 $node['children'][] = [
                     'id' => 'parent_' . $parent->id . '_' . $member->id,
-                    'text' => 'Parent: ' . $parent->name . ' (' . ucfirst($parent->member_type) . ') — ' . $this->memberIdentifier($parent),
+                    'text' => 'Parent / والدین: ' . $parent->name . ' (' . $parentType . ') — ' . $this->memberIdentifier($parent),
                     'type' => 'parent',
                     'relation' => 'Parent',
                     'icon' => 'jstree-file',

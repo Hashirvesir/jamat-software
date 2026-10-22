@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jamaat Management - @yield('title')</title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('logo.jpeg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
@@ -16,7 +17,10 @@
     @auth
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ route('members.index') }}">Jamaat Management</a>
+                <a class="navbar-brand d-flex align-items-center" href="{{ route('members.index') }}">
+                    <img src="{{ asset('logo.jpeg') }}" alt="Sindhi Halai Jamat Logo" class="rounded-circle bg-white p-1 me-2 shadow-sm" style="width: 36px; height: 36px; object-fit: contain;">
+                    <span>Sindhi Halai Jamat</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

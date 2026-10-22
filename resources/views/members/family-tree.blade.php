@@ -59,9 +59,12 @@
 @section('content')
     <div class="card shadow-sm mb-3">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="mb-0">Family Tree: {{ $member->name }} ({{ $member->community->name }})</h5>
+            <div>
+                <h5 class="mb-0">Family Tree: {{ $member->name }} ({{ $member->community->name }})</h5>
+                <small dir="rtl" class="text-white-50">شجرہ نسب / خاندانی تعلقات</small>
+            </div>
             <a href="{{ route('members.family-tree-pdf', $member) }}" class="btn btn-light btn-sm">Download Family
-                Tree PDF</a>
+                Tree PDF / پی ڈی ایف ڈاؤنلوڈ</a>
         </div>
         <div class="card-body">
             <div class="row align-items-center">
@@ -76,17 +79,31 @@
                 </div>
                 <div class="col-md-10">
                     <div class="row">
-                        <div class="col-sm-4 mb-1"><strong>Name:</strong> {{ $member->name }}</div>
-                        <div class="col-sm-4 mb-1">
-                            <strong>{{ $member->cnic ? 'CNIC' : 'B-Form No.' }}:</strong>
+                        <div class="col-sm-4 mb-2"><strong>Name / نام:</strong> {{ $member->name }}</div>
+                        <div class="col-sm-4 mb-2">
+                            <strong>{{ $member->cnic ? 'CNIC / شناختی کارڈ' : 'B-Form / ب فارم' }}:</strong>
                             {{ $member->cnic ?? $member->b_form_number ?? 'N/A' }}
                         </div>
-                        <div class="col-sm-4 mb-1"><strong>Community:</strong> {{ $member->community->name }}</div>
-                        <div class="col-sm-4 mb-1"><strong>Gender:</strong> {{ ucfirst($member->gender) }}</div>
-                        <div class="col-sm-4 mb-1"><strong>Member Type:</strong> {{ ucfirst($member->member_type) }}
-                        </div>
-                        <div class="col-sm-4 mb-1"><strong>Marital Status:</strong>
-                            {{ ucfirst($member->marital_status) }}</div>
+                        <div class="col-sm-4 mb-2"><strong>Community / برادری:</strong> {{ $member->community->name }}</div>
+                        <div class="col-sm-4 mb-2"><strong>Gender / جنس:</strong> {{ $member->gender === 'male' ? 'Male / مرد' : ($member->gender === 'female' ? 'Female / عورت' : 'Other / دیگر') }}</div>
+                        @php
+                            $memberTypeLabels = [
+                                'householder' => 'Householder / سربراہِ خاندان',
+                                'family_member' => 'Family Member / خاندان کا فرد',
+                                'child' => 'Child / بچہ',
+                                'spouse' => 'Spouse / شریکِ حیات',
+                                'sibling' => 'Sibling / بہن بھائی',
+                            ];
+                            $maritalStatusLabels = [
+                                'single' => 'Single / غیر شادی شدہ',
+                                'married' => 'Married / شادی شدہ',
+                                'divorced' => 'Divorced / طلاق یافتہ',
+                                'widowed' => 'Widowed / بیوہ / رنڈوا',
+                            ];
+                        @endphp
+                        <div class="col-sm-4 mb-2"><strong>Member Type / ممبر کی قسم:</strong> {{ $memberTypeLabels[$member->member_type] ?? ucfirst(str_replace('_', ' ', $member->member_type)) }}</div>
+                        <div class="col-sm-4 mb-2"><strong>Marital Status / ازدواجی حیثیت:</strong>
+                            {{ $maritalStatusLabels[$member->marital_status] ?? ucfirst($member->marital_status) }}</div>
                     </div>
                 </div>
             </div>
@@ -95,25 +112,27 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <strong>Tree</strong>
+            <div>
+                <strong>Family Tree / شجرہ نسب</strong>
+            </div>
             <div class="d-flex flex-wrap gap-3 small text-muted">
-                <span><span class="legend-dot" style="background:blue"></span>Member / Parent / Child</span>
-                <span><span class="legend-dot" style="background:green"></span>Spouse</span>
-                <span><span class="legend-dot" style="background:purple"></span>Sibling</span>
+                <span><span class="legend-dot" style="background:blue"></span>Member / Parent / Child (ممبر / والدین / بچہ)</span>
+                <span><span class="legend-dot" style="background:green"></span>Spouse (شریکِ حیات)</span>
+                <span><span class="legend-dot" style="background:purple"></span>Sibling (بہن بھائی)</span>
             </div>
         </div>
         <div class="card-body">
             @if ($treeData)
                 <div id="family-tree"></div>
             @else
-                <div class="alert alert-warning mb-0">No family relationships found for {{ $member->name }}.</div>
+                <div class="alert alert-warning mb-0">No family relationships found for {{ $member->name }}. / کوئی خاندانی تعلق نہیں ملا۔</div>
             @endif
         </div>
     </div>
 
     <div class="mt-3">
-        <a href="{{ route('members.select-family-tree') }}" class="btn btn-secondary">Select Another Member</a>
-        <a href="{{ route('members.index') }}" class="btn btn-secondary">Back to Members</a>
+        <a href="{{ route('members.select-family-tree') }}" class="btn btn-secondary">Select Another Member / دوسرا ممبر منتخب کریں</a>
+        <a href="{{ route('members.index') }}" class="btn btn-secondary ms-2">Back to Members / واپس ممبرز لسٹ</a>
     </div>
 @endsection
 

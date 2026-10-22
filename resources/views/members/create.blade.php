@@ -31,22 +31,26 @@
 
 @section('content')
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
             <h5 class="mb-0">Add New Member</h5>
+            <span dir="rtl" class="fs-6 fw-bold">نیا ممبر شامل کریں</span>
         </div>
         <div class="card-body">
             <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data" id="memberForm">
                 @csrf
                 <div class="row mb-3">
                     <div class="col-md-12">
-                        <label for="profile_picture" class="form-label">Profile Picture</label>
+                        <label for="profile_picture" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Profile Picture</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">پروفائل تصویر</span>
+                        </label>
                         <div class="input-group">
                             <input type="file" name="profile_picture" id="profile_picture" class="form-control d-none"
                                 accept="image/jpeg,image/jpg,image/png">
-                            <button type="button" class="btn btn-primary" id="addProfile">Add Profile</button>
+                            <button type="button" class="btn btn-primary" id="addProfile">Add Profile / تصویر شامل کریں</button>
                             <input type="hidden" name="captured_image" id="capturedImage"
                                 value="{{ old('captured_image') }}">
-                            <small class="text-muted ml-2">Max size: 2MB. Allowed formats: JPG, JPEG, PNG</small>
+                            <small class="text-muted ms-2 align-self-center">Max size: 2MB. Allowed formats: JPG, JPEG, PNG / زیادہ سے زیادہ 2MB</small>
                         </div>
                         @error('profile_picture')
                             <div class="text-danger mt-1">{{ $message }}</div>
@@ -61,82 +65,109 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                        <label for="name" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Name <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">نام <span class="text-danger">*</span></span>
+                        </label>
                         <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}"
                             required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Email</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ای میل</span>
+                        </label>
                         <input type="email" name="email" id="email" class="form-control"
                             value="{{ old('email') }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="membership_number" class="form-label">Membership Number</label>
+                        <label for="membership_number" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Membership Number</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ممبرشپ نمبر</span>
+                        </label>
                         <input type="text" name="membership_number" id="membership_number" class="form-control"
                             value="{{ old('membership_number') }}" placeholder="e.g., 09-0030">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="father_name" class="form-label">Father Name</label>
+                        <label for="father_name" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Father Name</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">والد کا نام</span>
+                        </label>
                         <input type="text" name="father_name" id="father_name" class="form-control"
                             value="{{ old('father_name') }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="grandfather_name" class="form-label">Grandfather Name</label>
+                        <label for="grandfather_name" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Grandfather Name</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">دادا کا نام</span>
+                        </label>
                         <input type="text" name="grandfather_name" id="grandfather_name" class="form-control"
                             value="{{ old('grandfather_name') }}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="caste" class="form-label">Cast / Gote</label>
+                        <label for="caste" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Cast / Gote</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">قوم / گوت</span>
+                        </label>
                         <input type="text" name="caste" id="caste" class="form-control"
                             value="{{ old('caste') }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="phone" class="form-label">Phone (11 digits, e.g., 03244230121)</label>
+                        <label for="phone" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Phone (Optional)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">فون نمبر (اختیاری)</span>
+                        </label>
                         <input type="text" name="phone" id="phone" class="form-control" value="{{ old('phone') }}"
-                            maxlength="11" pattern="\d{11}" title="Phone number must be exactly 11 digits">
+                            maxlength="20" placeholder="e.g., 03244230121">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                        <label for="gender" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Gender <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">جنس <span class="text-danger">*</span></span>
+                        </label>
                         <select name="gender" id="gender" class="form-select" required>
-                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male / مرد</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female / عورت</option>
+                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other / دیگر</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="cnic" class="form-label">CNIC (e.g., 42301-2323311-3)</label>
+                        <label for="cnic" class="form-label d-flex justify-content-between align-items-center">
+                            <span>CNIC (e.g., 42301-2323311-3)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">شناختی کارڈ نمبر</span>
+                        </label>
                         <input type="text" name="cnic" id="cnic" class="form-control"
                             value="{{ old('cnic') }}" pattern="\d{5}-\d{7}-\d{1}"
                             title="CNIC must be in format xxxxx-xxxxxxx-x">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="marital_status" class="form-label">Marital Status <span
-                                class="text-danger">*</span></label>
+                        <label for="marital_status" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Marital Status <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ازدواجی حیثیت <span class="text-danger">*</span></span>
+                        </label>
                         <select name="marital_status" id="marital_status" class="form-select" required>
-                            <option value="single" {{ old('marital_status') == 'single' ? 'selected' : '' }}>Single
-                            </option>
-                            <option value="married" {{ old('marital_status') == 'married' ? 'selected' : '' }}>Married
-                            </option>
-                            <option value="divorced" {{ old('marital_status') == 'divorced' ? 'selected' : '' }}>Divorced
-                            </option>
-                            <option value="widowed" {{ old('marital_status') == 'widowed' ? 'selected' : '' }}>Widowed
-                            </option>
-                            <option value="widower" {{ old('marital_status') == 'widower' ? 'selected' : '' }}>Widower
-                            </option>
+                            <option value="single" {{ old('marital_status') == 'single' ? 'selected' : '' }}>Single / غیر شادی شدہ</option>
+                            <option value="married" {{ old('marital_status') == 'married' ? 'selected' : '' }}>Married / شادی شدہ</option>
+                            <option value="divorced" {{ old('marital_status') == 'divorced' ? 'selected' : '' }}>Divorced / طلاق یافتہ</option>
+                            <option value="widowed" {{ old('marital_status') == 'widowed' ? 'selected' : '' }}>Widowed / بیوہ</option>
+                            <option value="widower" {{ old('marital_status') == 'widower' ? 'selected' : '' }}>Widower / رنڈوا</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="community_id" class="form-label">Community <span class="text-danger">*</span></label>
+                        <label for="community_id" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Community <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">برادری / جماعت <span class="text-danger">*</span></span>
+                        </label>
                         <select name="community_id" id="community_id" class="form-select" required>
                             @foreach ($communities as $community)
                                 <option value="{{ $community->id }}"
@@ -146,24 +177,26 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="member_type" class="form-label">Member Type <span
-                                class="text-danger">*</span></label>
+                        <label for="member_type" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Member Type <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ممبر کی قسم <span class="text-danger">*</span></span>
+                        </label>
                         <select name="member_type" id="member_type" class="form-select" required>
-                            <option value="householder" {{ old('member_type') == 'householder' ? 'selected' : '' }}>
-                                Householder</option>
-                            <option value="non_householder"
-                                {{ old('member_type') == 'non_householder' ? 'selected' : '' }}>Non-Householder</option>
-                            <option value="child" {{ old('member_type') == 'child' ? 'selected' : '' }}>Child</option>
-                            <option value="sibling" {{ old('member_type') == 'sibling' ? 'selected' : '' }}>Sibling
-                            </option>
+                            <option value="householder" {{ old('member_type') == 'householder' ? 'selected' : '' }}>Householder / سربراہِ خاندان</option>
+                            <option value="non_householder" {{ old('member_type') == 'non_householder' ? 'selected' : '' }}>Non-Householder / غیر سربراہ</option>
+                            <option value="child" {{ old('member_type') == 'child' ? 'selected' : '' }}>Child / بچہ</option>
+                            <option value="sibling" {{ old('member_type') == 'sibling' ? 'selected' : '' }}>Sibling / بہن بھائی</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="parent_id" class="form-label">Parent (Search by CNIC or select)</label>
+                        <label for="parent_id" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Parent (Search by CNIC or select)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">والدین (شناختی کارڈ سے تلاش کریں)</span>
+                        </label>
                         <select name="parent_id" id="parent_id" class="form-select select2-cnic">
-                            <option value="">None</option>
+                            <option value="">None / کوئی نہیں</option>
                             @if ($selectedParent)
                                 <option value="{{ $selectedParent->id }}" selected
                                     data-cnic="{{ $selectedParent->cnic }}">{{ $selectedParent->name }}
@@ -173,9 +206,12 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="spouse_id" class="form-label">Spouse (Search by CNIC or select)</label>
+                        <label for="spouse_id" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Spouse (Search by CNIC or select)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">شریکِ حیات (شناختی کارڈ سے تلاش کریں)</span>
+                        </label>
                         <select name="spouse_id" id="spouse_id" class="form-select select2-cnic">
-                            <option value="">None</option>
+                            <option value="">None / کوئی نہیں</option>
                             @if ($selectedSpouse)
                                 <option value="{{ $selectedSpouse->id }}" selected
                                     data-cnic="{{ $selectedSpouse->cnic }}">{{ $selectedSpouse->name }}
@@ -187,21 +223,29 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="address" class="form-label">Address</label>
+                        <label for="address" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Address</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">پتہ / رہائش</span>
+                        </label>
                         <textarea name="address" id="address" class="form-control">{{ old('address') }}</textarea>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="date_of_birth" class="form-label">Date of Birth <span
-                                class="text-danger">*</span></label>
+                        <label for="date_of_birth" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Date of Birth <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش <span class="text-danger">*</span></span>
+                        </label>
                         <input type="date" name="date_of_birth" id="date_of_birth" class="form-control"
                             value="{{ old('date_of_birth') }}" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="blood_group" class="form-label">Blood Group</label>
+                        <label for="blood_group" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Blood Group</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">بلڈ گروپ</span>
+                        </label>
                         <select name="blood_group" id="blood_group" class="form-select">
-                            <option value="">Select Blood Group</option>
+                            <option value="">Select Blood Group / بلڈ گروپ منتخب کریں</option>
                             <option value="A+" {{ old('blood_group') == 'A+' ? 'selected' : '' }}>A+</option>
                             <option value="A-" {{ old('blood_group') == 'A-' ? 'selected' : '' }}>A-</option>
                             <option value="B+" {{ old('blood_group') == 'B+' ? 'selected' : '' }}>B+</option>
@@ -213,69 +257,89 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="card_received" class="form-label">Card Received</label>
+                        <label for="card_received" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Card Received</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">کارڈ وصولی تعداد</span>
+                        </label>
                         <input type="number" name="card_received" id="card_received" class="form-control"
                             value="{{ old('card_received') }}" min="1">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="b_form_number" class="form-label">B-Form Number (e.g., 12345-6789012-3)</label>
+                        <label for="b_form_number" class="form-label d-flex justify-content-between align-items-center">
+                            <span>B-Form Number (e.g., 12345-6789012-3)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ب فارم نمبر</span>
+                        </label>
                         <input type="text" name="b_form_number" id="b_form_number" class="form-control"
                             value="{{ old('b_form_number') }}" pattern="\d{5}-\d{7}-\d{1}"
                             title="B-Form Number must be in format xxxxx-xxxxxxx-x">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
+                        <label for="country" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Country <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ملک <span class="text-danger">*</span></span>
+                        </label>
                         <select name="country" id="country" class="form-select" required>
-                            <option value="">Select Country</option>
-                            <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan
-                            </option>
-                            <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India</option>
-                            <option value="United States" {{ old('country') == 'United States' ? 'selected' : '' }}>United
-                                States</option>
-                            <option value="United Kingdom" {{ old('country') == 'United Kingdom' ? 'selected' : '' }}>
-                                United Kingdom</option>
-                            <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada</option>
-                            <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia
-                            </option>
-                            <option value="Germany" {{ old('country') == 'Germany' ? 'selected' : '' }}>Germany</option>
-                            <option value="France" {{ old('country') == 'France' ? 'selected' : '' }}>France</option>
-                            <option value="China" {{ old('country') == 'China' ? 'selected' : '' }}>China</option>
-                            <option value="Japan" {{ old('country') == 'Japan' ? 'selected' : '' }}>Japan</option>
+                            <option value="">Select Country / ملک منتخب کریں</option>
+                            <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan / پاکستان</option>
+                            <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India / بھارت</option>
+                            <option value="United States" {{ old('country') == 'United States' ? 'selected' : '' }}>United States / امریکہ</option>
+                            <option value="United Kingdom" {{ old('country') == 'United Kingdom' ? 'selected' : '' }}>United Kingdom / برطانیہ</option>
+                            <option value="Canada" {{ old('country') == 'Canada' ? 'selected' : '' }}>Canada / کینیڈا</option>
+                            <option value="Australia" {{ old('country') == 'Australia' ? 'selected' : '' }}>Australia / آسٹریلیا</option>
+                            <option value="Germany" {{ old('country') == 'Germany' ? 'selected' : '' }}>Germany / جرمنی</option>
+                            <option value="France" {{ old('country') == 'France' ? 'selected' : '' }}>France / فرانس</option>
+                            <option value="China" {{ old('country') == 'China' ? 'selected' : '' }}>China / چین</option>
+                            <option value="Japan" {{ old('country') == 'Japan' ? 'selected' : '' }}>Japan / جاپان</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="death_date" class="form-label">Death Date</label>
+                        <label for="death_date" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Death Date (Optional)</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ وفات (اختیاری)</span>
+                        </label>
                         <input type="date" name="death_date" id="death_date" class="form-control"
                             value="{{ old('death_date') }}" disabled>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="education" class="form-label">Education <span class="text-danger">*</span></label>
+                        <label for="education" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Education <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تعلیم <span class="text-danger">*</span></span>
+                        </label>
                         <input type="text" name="education" id="education" class="form-control"
                             value="{{ old('education') }}" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="skill" class="form-label">Skill <span class="text-danger">*</span></label>
+                        <label for="skill" class="form-label d-flex justify-content-between align-items-center">
+                            <span>Skill <span class="text-danger">*</span></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ہنر / مہارت <span class="text-danger">*</span></span>
+                        </label>
                         <input type="text" name="skill" id="skill" class="form-control"
                             value="{{ old('skill') }}" required>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label for="description" class="form-label d-flex justify-content-between align-items-center">
+                        <span>Description</span>
+                        <span dir="rtl" class="text-secondary fw-semibold">تفصیل / اضافی معلومات</span>
+                    </label>
                     <textarea name="description" id="description" class="form-control">{{ old('description') }}</textarea>
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" name="is_deceased" id="is_deceased" class="form-check-input" value="1"
-                        {{ old('is_deceased') ? 'checked' : '' }}>
-                    <label for="is_deceased" class="form-check-label">Deceased</label>
+                <div class="mb-4 form-check d-flex justify-content-between align-items-center p-3 bg-light rounded border">
+                    <div>
+                        <input type="checkbox" name="is_deceased" id="is_deceased" class="form-check-input" value="1"
+                            {{ old('is_deceased') ? 'checked' : '' }}>
+                        <label for="is_deceased" class="form-check-label ms-1 fw-semibold">Deceased</label>
+                    </div>
+                    <span dir="rtl" class="text-secondary fw-semibold">انتقال شدہ / وفات</span>
                 </div>
-                <button type="submit" class="btn btn-primary">Save Member</button>
-                <a href="{{ route('members.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Member / ممبر محفوظ کریں</button>
+                <a href="{{ route('members.index') }}" class="btn btn-secondary ms-2">Cancel / منسوخ کریں</a>
             </form>
         </div>
     </div>
@@ -383,15 +447,14 @@
                 }
             });
 
-            // Phone validation
+            // Phone validation (Optional)
             $('#phone').on('input', function() {
                 const phone = $(this).val();
-                const phoneRegex = /^\d{11}$/;
-                if (phone && !phoneRegex.test(phone)) {
+                if (phone && phone.length > 20) {
                     $(this).addClass('is-invalid');
                     $(this).next('.invalid-feedback').remove();
                     $(this).after(
-                        '<div class="invalid-feedback">Phone number must be exactly 11 digits</div>');
+                        '<div class="invalid-feedback">Phone number is too long</div>');
                 } else {
                     $(this).removeClass('is-invalid');
                     $(this).next('.invalid-feedback').remove();
@@ -414,11 +477,11 @@
                 }
             });
 
-            // Death Date enable/disable logic
+            // Death Date enable/disable logic (Optional)
             $('#is_deceased').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('#death_date').prop('disabled', false);
-                    $('#death_date').prop('required', true);
+                    $('#death_date').prop('required', false);
                 } else {
                     $('#death_date').prop('disabled', true);
                     $('#death_date').prop('required', false);
@@ -426,14 +489,26 @@
                 }
             });
 
-            // CNIC or B-Form validation (at least one required)
+            // Member type change logic - clear errors if child
+            $('#member_type').on('change', function() {
+                if ($(this).val() === 'child') {
+                    $('#cnic').removeClass('is-invalid');
+                    $('#b_form_number').removeClass('is-invalid');
+                    $('#cnic').next('.invalid-feedback').remove();
+                    $('#b_form_number').next('.invalid-feedback').remove();
+                }
+            });
+
+            // CNIC or B-Form validation (at least one required, except for child)
             $('#memberForm').on('submit', function(e) {
                 const cnic = $('#cnic').val();
                 const bForm = $('#b_form_number').val();
+                const memberType = $('#member_type').val();
+                const isChild = memberType === 'child';
                 const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
                 const bFormRegex = /^\d{5}-\d{7}-\d{1}$/;
 
-                if (!cnic && !bForm) {
+                if (!isChild && !cnic && !bForm) {
                     e.preventDefault();
                     $('#cnic').addClass('is-invalid');
                     $('#b_form_number').addClass('is-invalid');

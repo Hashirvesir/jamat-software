@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Membership Card - test</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Helvetica, Arial, urdu, noto, sans-serif;
+    }
+
+    @page {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+        color: #1a2621;
+    }
+
+    .urdu {
+        font-family: urdu, noto, sans-serif;
+    }
+
+    .card {
+        width: 85.6mm;
+        height: 54.0mm;
+        background: #ffffff;
+        overflow: hidden;
+        position: relative;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    table, tr, td {
+        border: none;
+        padding: 0;
+        vertical-align: top;
+    }
+
+    /* Header Bar */
+    .card-header {
+        background: #064433;
+        border-bottom: 1.5pt solid #c9a227;
+        padding: 4pt 7pt 3.5pt;
+    }
+
+    .card-header td {
+        vertical-align: middle;
+    }
+
+    .seal-circle {
+        width: 19pt;
+        height: 19pt;
+        line-height: 19pt;
+        text-align: center;
+        border-radius: 50%;
+        background: #c9a227;
+        color: #064433;
+        font-weight: bold;
+        font-size: 6.5pt;
+        letter-spacing: 0.5pt;
+    }
+
+    .brand-title {
+        color: #ffffff;
+        font-size: 8.5pt;
+        font-weight: bold;
+        letter-spacing: 0.4pt;
+        line-height: 1;
+    }
+
+    .brand-sub {
+        color: #bce5d4;
+        font-size: 4.8pt;
+        letter-spacing: 0.3pt;
+        margin-top: 1.5pt;
+        line-height: 1;
+    }
+
+    .mem-badge {
+        background: rgba(0, 0, 0, 0.3);
+        border: 0.75pt solid rgba(201, 162, 39, 0.9);
+        border-radius: 2.5pt;
+        color: #ffffff;
+        font-size: 5.5pt;
+        font-weight: bold;
+        padding: 1.5pt 3.5pt;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    /* Body Area */
+    .card-body {
+        padding: 4.5pt 7pt 2pt;
+    }
+
+    .lbl {
+        font-size: 4.5pt;
+        text-transform: uppercase;
+        letter-spacing: 0.3pt;
+        color: #65756e;
+        font-weight: bold;
+        line-height: 1;
+        margin-bottom: 0.5pt;
+    }
+
+    .val {
+        font-size: 6.5pt;
+        font-weight: bold;
+        color: #14241d;
+        line-height: 1.15;
+        border-bottom: 0.5pt solid #e0e7e4;
+        padding-bottom: 0.8pt;
+        margin-bottom: 2pt;
+    }
+
+    .val-name {
+        font-size: 7.8pt;
+        font-weight: bold;
+        color: #064433;
+        line-height: 1.1;
+        border-bottom: 0.5pt solid #e0e7e4;
+        padding-bottom: 0.8pt;
+        margin-bottom: 2pt;
+    }
+
+    .val-cnic {
+        font-size: 7pt;
+        font-weight: bold;
+        color: #064433;
+        line-height: 1.15;
+        border-bottom: 0.5pt solid #e0e7e4;
+        padding-bottom: 0.8pt;
+        margin-bottom: 2pt;
+        letter-spacing: 0.3pt;
+    }
+
+    /* Photo Frame */
+    .photo-cell {
+        width: 48pt;
+        text-align: center;
+    }
+
+    .photo-frame {
+        width: 46pt;
+        height: 54pt;
+        border: 1pt solid #c9a227;
+        border-radius: 2.5pt;
+        background: #f4f8f6;
+        overflow: hidden;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .photo-frame img {
+        width: 46pt;
+        height: 54pt;
+        display: block;
+    }
+
+    .type-pill {
+        background: #064433;
+        color: #ffffff;
+        font-size: 4.8pt;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 2pt;
+        padding: 1.5pt 2pt;
+        margin-top: 2pt;
+        text-transform: uppercase;
+        letter-spacing: 0.2pt;
+        line-height: 1.1;
+    }
+
+    /* Footer Row */
+    .card-footer-row {
+        margin-top: 1.5pt;
+    }
+
+    .validity-tag {
+        font-size: 4.3pt;
+        color: #064433;
+        font-weight: bold;
+        letter-spacing: 0.4pt;
+        padding-top: 4pt;
+    }
+
+    .sig-block {
+        width: 95pt;
+        text-align: center;
+        margin-left: auto;
+    }
+
+    .sig-line {
+        border-top: 0.6pt solid #c9a227;
+        margin-bottom: 1pt;
+    }
+
+    .sig-text {
+        font-size: 4.5pt;
+        color: #064433;
+        font-weight: bold;
+        letter-spacing: 0.2pt;
+    }
+
+    /* Bottom Decorative Stripe */
+    .bottom-stripe {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2pt;
+        background: #064433;
+        border-top: 0.6pt solid #c9a227;
+    }
+
+    /* Back Side Styles */
+    .back-sec-title {
+        font-size: 6.2pt;
+        font-weight: bold;
+        color: #064433;
+        letter-spacing: 0.3pt;
+        border-bottom: 0.6pt solid #064433;
+        padding-bottom: 1.2pt;
+        margin-bottom: 2pt;
+    }
+
+    .back-info-row {
+        font-size: 5.4pt;
+        line-height: 1.35;
+        color: #1a2621;
+        margin-bottom: 1.2pt;
+    }
+
+    .back-info-row strong {
+        color: #064433;
+        font-weight: bold;
+    }
+
+    .blood-badge {
+        color: #b31b1b;
+        font-weight: bold;
+    }
+
+    .stamp-box {
+        width: 56pt;
+        height: 32pt;
+        border: 0.75pt dashed #c9a227;
+        border-radius: 3pt;
+        background: #fdfdf9;
+        text-align: center;
+        padding-top: 5pt;
+        margin-left: auto;
+    }
+
+    .stamp-title {
+        font-size: 4.8pt;
+        font-weight: bold;
+        color: #8a7322;
+        text-transform: uppercase;
+        letter-spacing: 0.3pt;
+    }
+
+    .stamp-sub {
+        font-size: 4.3pt;
+        color: #8a7322;
+        margin-top: 1pt;
+    }
+
+    .disclaimer-box {
+        background: #f4f8f6;
+        border: 0.5pt solid #d3e4dc;
+        border-radius: 2.5pt;
+        padding: 2pt 4pt;
+        margin-top: 2.5pt;
+        text-align: center;
+    }
+
+    .disc-en {
+        font-size: 4.2pt;
+        color: #4a5c54;
+        line-height: 1.15;
+    }
+
+    .disc-ur {
+        font-size: 4.2pt;
+        color: #064433;
+        margin-top: 0.8pt;
+        line-height: 1.15;
+    }
+</style>
+</head>
+<body>
+
+
+<!-- FRONT SIDE -->
+<div class="card">
+    <table class="card-header">
+        <tr>
+            <td width="23"><div class="seal-circle">SHJ</div></td>
+            <td style="padding-left:5pt;">
+                <div class="brand-title">SINDHI HALAI JAMAT</div>
+                <div class="brand-sub">MEMBERSHIP IDENTITY CARD &bull; <span class="urdu">شناختی کارڈ</span></div>
+            </td>
+            <td width="65" style="text-align:right;">
+                <div class="mem-badge">ID: 032321312</div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="card-body">
+        <table style="width:100%;">
+            <tr>
+                <td style="padding-right:6pt;">
+                    <div class="lbl">FULL NAME / نام</div>
+                    <div class="val-name">test</div>
+
+                    <div class="lbl">FATHER NAME / ولدیت</div>
+                    <div class="val">test 3</div>
+
+                    <table style="width:100%;">
+                        <tr>
+                            <td width="55%">
+                                <div class="lbl">GRANDFATHER / دادا</div>
+                                <div class="val">test fff</div>
+                            </td>
+                            <td>
+                                <div class="lbl">CASTE / قوم</div>
+                                <div class="val">3242</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="lbl">CNIC NUMBER / شناختی کارڈ</div>
+                    <div class="val-cnic">42301-2131355-1</div>
+                </td>
+                <td class="photo-cell">
+                    <div class="photo-frame">
+                                                    <img src="C:\Users\Hashir\OneDrive\Documents\GitHub\jamat-software\public\image/default-profile.jpg" alt="Default">
+                                            </div>
+                    <div class="type-pill">Householder &bull; <span class="urdu">سربراہِ خاندان</span></div>
+                </td>
+            </tr>
+        </table>
+
+        <table class="card-footer-row" style="width:100%;">
+            <tr>
+                <td class="validity-tag">&bull; OFFICIAL IDENTITY CARD &bull;</td>
+                <td class="sig-block">
+                    <div class="sig-line"></div>
+                    <div class="sig-text">Authorized Signatory / <span class="urdu">مجاز دستخط</span></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="bottom-stripe"></div>
+</div>
+
+<pagebreak />
+
+<!-- BACK SIDE -->
+<div class="card">
+    <table class="card-header">
+        <tr>
+            <td width="23"><div class="seal-circle">SHJ</div></td>
+            <td style="padding-left:5pt;">
+                <div class="brand-title">SINDHI HALAI JAMAT</div>
+                <div class="brand-sub">VERIFICATION &amp; DETAILS &bull; <span class="urdu">دفتری تصدیق و کوائف</span></div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="card-body">
+        <div class="back-sec-title">MEMBER PARTICULARS &bull; <span class="urdu">کوائف ممبر</span></div>
+
+        <table style="width:100%;">
+            <tr>
+                <td style="width:66%;padding-right:4pt;">
+                    <div class="back-info-row"><strong>Community</strong> / برادری: Community A</div>
+                    <div class="back-info-row"><strong>Gender</strong> / جنس: Male (مرد) &nbsp;|&nbsp; <strong>Status</strong>: Single</div>
+                    <div class="back-info-row"><strong>DOB</strong> / پیدائش: 2000-01-02 &nbsp;|&nbsp; <strong>Blood</strong>: <span class="blood-badge">A+</span></div>
+                    <div class="back-info-row"><strong>Phone</strong> / رابطہ: 03244283400</div>
+                    <div class="back-info-row"><strong>Address</strong> / پتہ: nishtar road garden west orange street...</div>
+                    <div class="back-info-row"><strong>Issued</strong> / تاریخِ اجراء: 31 Aug 2026</div>
+                </td>
+                <td style="text-align:center;">
+                    <div class="stamp-box">
+                        <div class="stamp-title">OFFICIAL STAMP</div>
+                        <div class="stamp-sub urdu">دفتری تصدیق و مہر</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="disclaimer-box">
+            <div class="disc-en">This card is the property of Sindhi Halai Jamat. Non-transferable.</div>
+            <div class="disc-ur urdu">یہ کارڈ سندھی ہالائی جماعت کی ملکیت ہے۔ گمشدگی پر جماعت کے دفتر میں جمع کروائیں۔</div>
+        </div>
+    </div>
+
+    <div class="bottom-stripe"></div>
+</div>
+
+</body>
+</html>
