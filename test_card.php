@@ -9,7 +9,7 @@ if (!$m) { echo "No member found\n"; exit(1); }
 echo "Member: {$m->name} (ID: {$m->id})\n";
 
 // Generate card PDF
-$pdf = App\Support\MpdfPdf::loadCard('members.card-pdf', ['member' => $m]);
+$pdf = App\Support\MpdfPdf::loadCard('members.card-front-pdf', 'members.card-back-pdf', ['member' => $m]);
 $content = $pdf->output();
 file_put_contents('test_card.pdf', $content);
 echo "Card PDF: " . strlen($content) . " bytes\n";

@@ -262,7 +262,11 @@ class MemberController extends Controller
     public function downloadCard(Member $member)
     {
         $member = Member::with('community')->findOrFail($member->id);
-        $pdf = MpdfPdf::loadCard('members.card-pdf', compact('member'));
+        $pdf = MpdfPdf::loadCard(
+            'members.card-front-pdf',
+            'members.card-back-pdf',
+            compact('member')
+        );
         return $pdf->download('member-card-' . $member->id . '.pdf');
     }
 

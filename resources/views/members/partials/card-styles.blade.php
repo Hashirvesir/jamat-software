@@ -22,113 +22,125 @@
     .hdr {
         width: 100%;
         background-color: #064433;
-        padding: 4pt 6pt 3pt 6pt;
-        border-bottom: 2pt solid #c9a227;
+        padding: 3pt 5pt 2.5pt 5pt;
+        border-bottom: 1.5pt solid #c9a227;
     }
     .hdr td { vertical-align: middle; }
     .hdr-logo {
-        width: 18pt;
-        height: 18pt;
+        width: 16pt;
+        height: 16pt;
         border-radius: 50%;
     }
     .hdr-org {
         color: #ffffff;
-        font-size: 9pt;
+        font-size: 8pt;
         font-weight: bold;
-        letter-spacing: 0.4pt;
+        letter-spacing: 0.3pt;
+        line-height: 1;
     }
     .hdr-sub {
         color: #c3ddd0;
-        font-size: 4.5pt;
-        letter-spacing: 0.3pt;
-        margin-top: 1pt;
+        font-size: 4pt;
+        letter-spacing: 0.2pt;
+        margin-top: 0.8pt;
+        line-height: 1;
     }
     .hdr-id {
         background-color: #0d5a42;
-        border: 0.6pt solid #c9a227;
+        border: 0.5pt solid #c9a227;
         color: #ffffff;
-        font-size: 5.5pt;
+        font-size: 5pt;
         font-weight: bold;
-        padding: 2pt 4pt;
+        padding: 1.5pt 3pt;
         text-align: center;
-        border-radius: 2pt;
     }
 
     /* ── Body ── */
     .bdy {
-        padding: 4pt 6pt 2pt 6pt;
+        padding: 3pt 5pt 1.5pt 5pt;
     }
     .bdy td { vertical-align: top; padding: 0; }
 
     /* Labels & Values */
     .lbl {
-        font-size: 4.2pt;
+        font-size: 3.8pt;
         text-transform: uppercase;
-        letter-spacing: 0.3pt;
+        letter-spacing: 0.2pt;
         color: #5c6e66;
         font-weight: bold;
         line-height: 1;
-        margin-bottom: 0.3pt;
+        margin-bottom: 0.2pt;
     }
     .val {
-        font-size: 6.5pt;
+        font-size: 6pt;
         font-weight: bold;
         color: #0f2a1f;
         border-bottom: 0.4pt solid #dce4df;
-        padding-bottom: 0.6pt;
-        margin-bottom: 1.8pt;
-        line-height: 1.2;
+        padding-bottom: 0.4pt;
+        margin-bottom: 1.2pt;
+        line-height: 1.1;
     }
     .val-lg {
-        font-size: 7.5pt;
+        font-size: 7pt;
         font-weight: bold;
         color: #064433;
         border-bottom: 0.5pt solid #c9a227;
-        padding-bottom: 0.6pt;
-        margin-bottom: 1.8pt;
-        line-height: 1.2;
+        padding-bottom: 0.4pt;
+        margin-bottom: 1.2pt;
+        line-height: 1.1;
+    }
+    .val-cnic {
+        font-size: 6.5pt;
+        font-weight: bold;
+        color: #064433;
+        letter-spacing: 0.3pt;
+        border-bottom: 0.4pt solid #dce4df;
+        padding-bottom: 0.4pt;
+        margin-bottom: 1.2pt;
+        line-height: 1.1;
     }
 
     /* Photo */
     .photo-wrap {
-        width: 48pt;
+        width: 46pt;
         text-align: center;
     }
     .photo-box {
-        width: 44pt;
-        height: 52pt;
-        border: 1pt solid #064433;
+        width: 43pt;
+        height: 45pt;
+        border: 0.8pt solid #064433;
         overflow: hidden;
         background-color: #eef4f0;
     }
     .photo-box img {
-        width: 44pt;
-        height: 52pt;
+        width: 43pt;
+        height: 45pt;
     }
     .type-lbl {
         background-color: #064433;
         color: #ffffff;
-        font-size: 4.5pt;
+        font-size: 4pt;
         font-weight: bold;
         text-align: center;
-        padding: 1.2pt 1pt;
-        margin-top: 1.5pt;
+        padding: 1pt 1pt;
+        margin-top: 1pt;
         letter-spacing: 0.2pt;
+        line-height: 1.2;
     }
 
     /* Signature */
     .sig-area {
         text-align: right;
-        padding-top: 1pt;
+        padding-top: 0.5pt;
     }
     .sig-line {
-        width: 85pt;
+        width: 80pt;
         border-bottom: 0.5pt solid #c9a227;
         margin-left: auto;
-        margin-bottom: 1pt;
+        margin-bottom: 0.8pt;
     }
     .sig-txt {
-        font-size: 4.2pt;
+        font-size: 3.8pt;
         color: #064433;
         font-weight: bold;
     }
@@ -137,7 +149,7 @@
     .ftr {
         width: 100%;
         background-color: #064433;
-        height: 2.5pt;
+        height: 2pt;
     }
 
     /* ── Back Side ── */

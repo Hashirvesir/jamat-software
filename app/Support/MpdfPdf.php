@@ -61,50 +61,48 @@ class MpdfPdf
         }
     }
 
-    public static function loadCard(string $view, array $data = []): self
+    /**
+     * Build a 2-page ID card PDF.
+     * Front and back are rendered from SEPARATE views so mPDF never
+     * inserts an accidental blank page from a <pagebreak/> tag.
+     * Logo is added as a transparent centred watermark on every page.
+     *
+     * @param string $frontView  e.g. 'members.card-front-pdf'
+     * @param string $backView   e.g. 'members.card-back-pdf'
+     * @param array  $data       Data passed to both views
+     */
+    public static function loadCard(string $frontView, string $backView, array $data = []): self
     {
         $instance = new self([
-            'format' => [85.725, 53.975],
-            'margin_left' => 0,
+            'format'       => [85.725, 53.975],
+            'margin_left'  => 0,
             'margin_right' => 0,
-            'margin_top' => 0,
-            'margin_bottom' => 0,
+            'margin_top'   => 0,
+            'margin_bottom'=> 0,
             'no_watermark' => true,
         ]);
         $instance->mpdf->autoPageBreak = false;
 
-        // Add logo as centered watermark on card pages
+        // Faint logo watermark centred on every page
         $logoPath = public_path('logo.jpeg');
         if (file_exists($logoPath)) {
-            $instance->mpdf->SetWatermarkImage($logoPath, 0.06, [30, 30], [28, 14]);
+            $instance->mpdf->SetWatermarkImage($logoPath, 0.07, [28, 28], [29, 15]);
             $instance->mpdf->showWatermarkImage = true;
         }
 
-        $html = View::make($view, $data)->render();
-        $instance->mpdf->WriteHTML($html);
+        // Page 1 – Front
+        $instance->mpdf->WriteHTML(View::make($frontView, $data)->render());
+        // Page 2 – Back
+        $instance->mpdf->AddPage();
+        $instance->mpdf->WriteHTML(View::make($backView, $data)->render());
+
         return $instance;
     }
 
+    /** @deprecated Use loadCard() instead */
     public static function loadCardView(string $frontView, string $backView, array $data = []): self
     {
-        $instance = new self([
-            'format' => [85.725, 53.975],
-            'margin_left' => 0,
-            'margin_right' => 0,
-            'margin_top' => 0,
-            'margin_bottom' => 0,
-            'no_watermark' => true,
-        ]);
-        $instance->mpdf->autoPageBreak = false;
-
-        $frontHtml = View::make($frontView, $data)->render();
-        $backHtml = View::make($backView, $data)->render();
-
-        $instance->mpdf->WriteHTML($frontHtml);
-        $instance->mpdf->AddPage();
-        $instance->mpdf->WriteHTML($backHtml);
-
-        return $instance;
+        return self::loadCard($frontView, $backView, $data);
     }
 
     public static function loadView(string $view, array $data = [], array $mergeData = [], array $config = []): self
