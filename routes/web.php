@@ -31,6 +31,17 @@ Route::get('/members/report/export', [ReportController::class, 'export'])->name(
         ->name('members.index')
         ->middleware('permission:view members');
     
+    // Convenient aliases so /members/show/{id} or /member/{id} never 404
+    Route::get('/members/show/{member}', function ($member) {
+        return redirect()->route('members.show', $member);
+    })->middleware('auth');
+    Route::get('/member/{member}', function ($member) {
+        return redirect()->route('members.show', $member);
+    })->middleware('auth');
+    Route::get('/member/show/{member}', function ($member) {
+        return redirect()->route('members.show', $member);
+    })->middleware('auth');
+
     Route::resource('members', MemberController::class)->except(['index'])->middleware('auth');
     
     // Family Tree Routes

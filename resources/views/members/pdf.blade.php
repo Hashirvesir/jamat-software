@@ -374,7 +374,7 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($member->children as $child)
+            @forelse($member->family_children as $child)
                 @php
                     $childGenderUrdu = match($child->gender) {
                         'male' => 'مرد',

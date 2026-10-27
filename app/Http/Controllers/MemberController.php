@@ -24,7 +24,7 @@ class MemberController extends Controller
     }
     public function index()
     {
-        $members = Member::with('community', 'parent', 'spouse')->paginate(10);
+        $members = Member::with('community', 'parent', 'spouse')->latest('id')->paginate(10);
         return view('members.index', compact('members'));
     }
 
@@ -36,81 +36,296 @@ class MemberController extends Controller
         return view('members.create', compact('communities', 'selectedParent', 'selectedSpouse'));
     }
 
- public function store(Request $request)
+    protected function sanitizeDate($date): ?string
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:members,email',
-            'phone' => 'nullable|string|max:20',
-            'gender' => 'required|in:male,female,other',
-            'cnic' => [
-                'nullable',
-                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
-                'unique:members,cnic',
-                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->b_form_number)),
-            ],
-            'marital_status' => 'required|in:single,married,divorced,widowed,widower',
-            'community_id' => 'required|exists:communities,id',
-            'member_type' => 'required|in:householder,non_householder,child,sibling',
-            'parent_id' => 'nullable|exists:members,id',
-            'spouse_id' => 'nullable|exists:members,id',
-            'address' => 'nullable|string',
-            'date_of_birth' => 'required|date',
-            'is_deceased' => 'nullable|boolean',
-            'profile_picture' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
-            'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'card_received' => 'nullable|integer',
-            'b_form_number' => [
-                'nullable',
-                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
-                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->cnic)),
-            ],
-            'country' => 'required|in:Pakistan,India,United States,United Kingdom,Canada,Australia,Germany,France,China,Japan',
-            'death_date' => 'nullable|date',
-            'education' => 'required|string',
-            'skill' => 'required|string',
-            'membership_number' => 'nullable|string|max:50|unique:members,membership_number',
-            'father_name' => 'nullable|string|max:255',
-            'grandfather_name' => 'nullable|string|max:255',
-            'caste' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+        if (empty($date)) {
+            return null;
         }
-
-        $data = $request->all();
-        if ($request->hasFile('profile_picture')) {
-            $file = $request->file('profile_picture');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('profiles'), $filename);
-            $data['profile_picture'] = $filename;
+        try {
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return null;
         }
-
-        DB::transaction(function () use ($request, $data) {
-            $member = Member::create($data);
-
-            if ($request->input('is_deceased') && $member->spouse_id) {
-                $spouse = Member::find($member->spouse_id);
-                if ($spouse) {
-                    $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
-                    $spouse->save();
-                }
-            }
-
-            AuditLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'Created member ' . $member->name,
-            ]);
-        });
-
-        return redirect()->route('members.index')->with('success', 'Member added successfully.');
     }
 
-    public function show(Member $member)
+    public function store(Request $request)
     {
-        $member = Member::with(['community', 'parent', 'spouse', 'children'])->findOrFail($member->id);
-        return view('members.show', compact('member'));
+        $data = $request->all();
+
+        // 1. Truncate string inputs and convert empty strings to null
+        $stringFields = [
+            'name', 'father_name', 'grandfather_name', 'caste', 'email', 'phone',
+            'cnic', 'membership_number', 'blood_group', 'b_form_number', 'country',
+            'education', 'skill', 'address', 'description'
+        ];
+        foreach ($stringFields as $f) {
+            if (isset($data[$f]) && is_string($data[$f])) {
+                $trimmed = trim($data[$f]);
+                $maxLen = ($f === 'description') ? 65000 : 250;
+                $data[$f] = $trimmed === '' ? null : mb_substr($trimmed, 0, $maxLen);
+            }
+        }
+
+        // 2. Validate and normalize Enums
+        if (empty($data['name'])) {
+            $data['name'] = 'N/A';
+        }
+        if (empty($data['gender']) || !in_array($data['gender'], ['male', 'female', 'other'])) {
+            $data['gender'] = 'male';
+        }
+        if (empty($data['marital_status']) || !in_array($data['marital_status'], ['single', 'married', 'divorced', 'widowed', 'widower'])) {
+            $data['marital_status'] = 'single';
+        }
+        if (empty($data['member_type']) || !in_array($data['member_type'], ['householder', 'non_householder', 'child', 'sibling'])) {
+            $data['member_type'] = 'householder';
+        }
+        if (empty($data['status']) || !in_array($data['status'], ['active', 'inactive'])) {
+            $data['status'] = 'active';
+        }
+
+        // 3. Normalize Date & Numeric fields
+        $data['is_deceased'] = !empty($data['is_deceased']) ? 1 : 0;
+        $data['date_of_birth'] = $this->sanitizeDate($data['date_of_birth'] ?? null);
+        $data['death_date'] = $data['is_deceased'] ? $this->sanitizeDate($data['death_date'] ?? null) : null;
+        $data['card_received'] = (!empty($data['card_received']) && is_numeric($data['card_received'])) ? (int) $data['card_received'] : null;
+
+        // 4. Safe Foreign Keys (Community, Parent, Spouse)
+        if (!empty($data['community_id'])) {
+            $commExists = Community::where('id', $data['community_id'])->exists();
+            if (!$commExists) {
+                $defaultComm = Community::first() ?? Community::create(['name' => 'General Community']);
+                $data['community_id'] = $defaultComm->id;
+            } else {
+                $data['community_id'] = (int) $data['community_id'];
+            }
+        } else {
+            $defaultComm = Community::first() ?? Community::create(['name' => 'General Community']);
+            $data['community_id'] = $defaultComm->id;
+        }
+
+        if (!empty($data['parent_id'])) {
+            $data['parent_id'] = Member::where('id', $data['parent_id'])->exists() ? (int) $data['parent_id'] : null;
+        } else {
+            $data['parent_id'] = null;
+        }
+
+        if (!empty($data['spouse_id'])) {
+            $data['spouse_id'] = Member::where('id', $data['spouse_id'])->exists() ? (int) $data['spouse_id'] : null;
+        } else {
+            $data['spouse_id'] = null;
+        }
+
+        // 5. Handle Profile Picture (File upload or Base64 Webcam capture)
+        if (!file_exists(public_path('profiles'))) {
+            @mkdir(public_path('profiles'), 0777, true);
+        }
+
+        if ($request->hasFile('profile_picture')) {
+            try {
+                $file = $request->file('profile_picture');
+                $ext = strtolower($file->getClientOriginalExtension());
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                    $ext = 'jpg';
+                }
+                $filename = uniqid('prof_') . '.' . $ext;
+                $file->move(public_path('profiles'), $filename);
+                $data['profile_picture'] = $filename;
+            } catch (\Throwable $e) {
+                Log::warning('Profile picture file upload failed: ' . $e->getMessage());
+            }
+        } elseif (!empty($request->input('captured_image')) && str_starts_with($request->input('captured_image'), 'data:image')) {
+            try {
+                $captured = $request->input('captured_image');
+                $parts = explode(';base64,', $captured);
+                if (count($parts) === 2) {
+                    $extParts = explode('image/', $parts[0]);
+                    $ext = $extParts[1] ?? 'png';
+                    $ext = explode('+', $ext)[0];
+                    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $ext = 'png';
+                    }
+                    $filename = uniqid('cam_') . '.' . $ext;
+                    file_put_contents(public_path('profiles/' . $filename), base64_decode($parts[1]));
+                    $data['profile_picture'] = $filename;
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Captured image base64 decode failed: ' . $e->getMessage());
+            }
+        }
+
+        // 6. Separate Spouse and Children input data
+        $spouseType = $request->input('spouse_type', 'new');
+        $spouseName = trim((string) $request->input('spouse_name', ''));
+        $spouseCnic = trim((string) $request->input('spouse_cnic', '')) ?: null;
+        $spousePhone = trim((string) $request->input('spouse_phone', '')) ?: null;
+        $spouseGender = $request->input('spouse_gender');
+        if (!in_array($spouseGender, ['male', 'female', 'other'])) {
+            $spouseGender = $data['gender'] === 'male' ? 'female' : 'male';
+        }
+        $spouseDob = $this->sanitizeDate($request->input('spouse_date_of_birth'));
+        $spouseBloodGroup = trim((string) $request->input('spouse_blood_group', '')) ?: null;
+        $existingSpouseId = $request->input('spouse_id');
+        if (!empty($existingSpouseId) && !Member::where('id', $existingSpouseId)->exists()) {
+            $existingSpouseId = null;
+        }
+
+        $childrenData = $request->input('children', []);
+
+        // Clean extra non-column keys from main member payload
+        unset(
+            $data['spouse_type'],
+            $data['spouse_name'],
+            $data['spouse_cnic'],
+            $data['spouse_phone'],
+            $data['spouse_gender'],
+            $data['spouse_date_of_birth'],
+            $data['spouse_blood_group'],
+            $data['children'],
+            $data['captured_image']
+        );
+
+        if ($spouseType === 'new') {
+            $data['spouse_id'] = null;
+        }
+
+        try {
+            DB::transaction(function () use ($request, $data, $spouseType, $spouseName, $spouseCnic, $spousePhone, $spouseGender, $spouseDob, $spouseBloodGroup, $existingSpouseId, $childrenData) {
+                if (!empty($spouseName) || !empty($existingSpouseId)) {
+                    $data['marital_status'] = 'married';
+                }
+
+                $member = Member::create($data);
+
+                // Handle Spouse
+                if ($member->marital_status === 'married' || !empty($spouseName) || !empty($existingSpouseId)) {
+                    if ($spouseType === 'new' && !empty($spouseName)) {
+                        $spouse = Member::create([
+                            'name' => mb_substr($spouseName, 0, 250),
+                            'gender' => $spouseGender,
+                            'cnic' => $spouseCnic ? mb_substr($spouseCnic, 0, 50) : null,
+                            'phone' => $spousePhone ? mb_substr($spousePhone, 0, 50) : null,
+                            'date_of_birth' => $spouseDob,
+                            'blood_group' => $spouseBloodGroup ? mb_substr($spouseBloodGroup, 0, 10) : null,
+                            'marital_status' => 'married',
+                            'spouse_id' => $member->id,
+                            'community_id' => $member->community_id,
+                            'member_type' => 'non_householder',
+                            'address' => $member->address,
+                            'country' => $member->country,
+                            'caste' => $member->caste,
+                            'status' => 'active',
+                        ]);
+
+                        $member->spouse_id = $spouse->id;
+                        $member->marital_status = 'married';
+                        $member->save();
+                    } elseif ($spouseType === 'existing' && !empty($existingSpouseId)) {
+                        $existingSpouse = Member::find($existingSpouseId);
+                        if ($existingSpouse) {
+                            $member->spouse_id = $existingSpouse->id;
+                            $member->marital_status = 'married';
+                            $member->save();
+
+                            $existingSpouse->spouse_id = $member->id;
+                            $existingSpouse->marital_status = 'married';
+                            $existingSpouse->save();
+                        }
+                    }
+                }
+
+                // Handle Deceased spouse status change
+                if (!empty($data['is_deceased']) && $member->spouse_id) {
+                    $spouse = Member::find($member->spouse_id);
+                    if ($spouse) {
+                        $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
+                        $spouse->save();
+                    }
+                }
+
+                // Handle Children
+                $createdChildrenCount = 0;
+                if (is_array($childrenData)) {
+                    $fatherId = $member->gender === 'male' ? $member->id : ($member->spouse_id ?: $member->id);
+                    $fatherName = $member->gender === 'male' ? $member->name : ($spouseName ?: ($member->father_name ?? null));
+                    $grandfatherName = $member->gender === 'male' ? $member->father_name : ($member->grandfather_name ?? null);
+
+                    foreach ($childrenData as $childItem) {
+                        if (!is_array($childItem)) {
+                            continue;
+                        }
+                        $childName = isset($childItem['name']) ? trim((string) $childItem['name']) : '';
+                        if (empty($childName)) {
+                            continue;
+                        }
+
+                        $childGender = $childItem['gender'] ?? 'male';
+                        if (!in_array($childGender, ['male', 'female', 'other'])) {
+                            $childGender = 'male';
+                        }
+                        $childDob = $this->sanitizeDate($childItem['date_of_birth'] ?? null);
+                        $childBform = !empty($childItem['b_form_number']) ? mb_substr(trim((string) $childItem['b_form_number']), 0, 50) : null;
+                        $childBloodGroup = !empty($childItem['blood_group']) ? mb_substr(trim((string) $childItem['blood_group']), 0, 10) : null;
+
+                        Member::create([
+                            'name' => mb_substr($childName, 0, 250),
+                            'gender' => $childGender,
+                            'date_of_birth' => $childDob,
+                            'b_form_number' => $childBform,
+                            'blood_group' => $childBloodGroup,
+                            'parent_id' => $fatherId,
+                            'community_id' => $member->community_id,
+                            'member_type' => 'child',
+                            'marital_status' => 'single',
+                            'address' => $member->address,
+                            'country' => $member->country,
+                            'caste' => $member->caste,
+                            'father_name' => $fatherName ? mb_substr($fatherName, 0, 250) : null,
+                            'grandfather_name' => $grandfatherName ? mb_substr($grandfatherName, 0, 250) : null,
+                            'status' => 'active',
+                        ]);
+                        $createdChildrenCount++;
+                    }
+                }
+
+                $auditMsg = 'Created member ' . mb_substr($member->name ?? 'N/A', 0, 100);
+                if ($member->spouse_id) {
+                    $auditMsg .= ' with spouse';
+                }
+                if ($createdChildrenCount > 0) {
+                    $auditMsg .= ' and ' . $createdChildrenCount . ' children';
+                }
+
+                if (auth()->check()) {
+                    AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => mb_substr($auditMsg, 0, 245),
+                    ]);
+                }
+            });
+
+            return redirect()->route('members.index')->with('success', 'Member kamiyabi se add ho gaya hai (Member added successfully).');
+        } catch (\Throwable $e) {
+            \Log::error('Member store error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return redirect()->back()->withInput()->with('error', 'Member save nahi ho saka: ' . $e->getMessage());
+        }
+    }
+
+    public function show($member)
+    {
+        try {
+            if (!$member instanceof Member) {
+                $member = Member::findOrFail($member);
+            }
+            $member->loadMissing(['community', 'parent.spouse', 'spouse']);
+            $familyChildren = $member->family_children ?? collect();
+            $father = $member->father;
+            $mother = $member->mother;
+            $siblings = $member->siblings ?? collect();
+            return view('members.show', compact('member', 'familyChildren', 'father', 'mother', 'siblings'));
+        } catch (\Throwable $e) {
+            Log::error('Member show error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return redirect()->route('members.index')->with('error', 'Member record open nahi ho saka: ' . $e->getMessage());
+        }
     }
 
     public function edit(Member $member)
@@ -125,83 +340,160 @@ class MemberController extends Controller
 
     public function update(Request $request, Member $member)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:members,email,' . $member->id,
-            'phone' => 'nullable|string|max:20',
-            'gender' => 'required|in:male,female,other',
-            'cnic' => [
-                'nullable',
-                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
-                Rule::unique('members', 'cnic')->ignore($member->id),
-                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->b_form_number)),
-            ],
-            'marital_status' => 'required|in:single,married,divorced,widowed,widower',
-            'community_id' => 'required|exists:communities,id',
-            'member_type' => 'required|in:householder,non_householder,child,sibling',
-            'parent_id' => ['nullable', 'exists:members,id', Rule::notIn([$member->id])],
-            'spouse_id' => ['nullable', 'exists:members,id', Rule::notIn([$member->id])],
-            'address' => 'nullable|string',
-            'date_of_birth' => 'required|date',
-            'is_deceased' => 'nullable|boolean',
-            'profile_picture' => 'nullable|image|max:2048|mimes:jpg,jpeg,png',
-            'blood_group' => 'nullable|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'card_received' => 'nullable|integer',
-            'b_form_number' => [
-                'nullable',
-                'regex:/^[0-9]{5}-[0-9]{7}-[0-9]$/',
-                Rule::requiredIf(fn() => $request->member_type !== 'child' && empty($request->cnic)),
-            ],
-            'country' => 'required|in:Pakistan,India,United States,United Kingdom,Canada,Australia,Germany,France,China,Japan',
-            'death_date' => 'nullable|date',
-            'education' => 'required|string',
-            'skill' => 'required|string',
-            'membership_number' => 'nullable|string|max:50|unique:members,membership_number,' . $member->id,
-            'father_name' => 'nullable|string|max:255',
-            'grandfather_name' => 'nullable|string|max:255',
-            'caste' => 'nullable|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
         $data = $request->all();
-        if ($request->hasFile('profile_picture')) {
-            if ($member->profile_picture && file_exists(public_path('profiles/' . $member->profile_picture))) {
-                unlink(public_path('profiles/' . $member->profile_picture));
+
+        // 1. Truncate string inputs and convert empty strings to null
+        $stringFields = [
+            'name', 'father_name', 'grandfather_name', 'caste', 'email', 'phone',
+            'cnic', 'membership_number', 'blood_group', 'b_form_number', 'country',
+            'education', 'skill', 'address', 'description'
+        ];
+        foreach ($stringFields as $f) {
+            if (isset($data[$f]) && is_string($data[$f])) {
+                $trimmed = trim($data[$f]);
+                $maxLen = ($f === 'description') ? 65000 : 250;
+                $data[$f] = $trimmed === '' ? null : mb_substr($trimmed, 0, $maxLen);
             }
-            $file = $request->file('profile_picture');
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('profiles'), $filename);
-            $data['profile_picture'] = $filename;
         }
 
-        DB::transaction(function () use ($request, $member, $data) {
-            $oldDeceased = $member->is_deceased;
-            $member->update($data);
+        // 2. Validate and normalize Enums
+        if (empty($data['name'])) {
+            $data['name'] = $member->name ?: 'N/A';
+        }
+        if (empty($data['gender']) || !in_array($data['gender'], ['male', 'female', 'other'])) {
+            $data['gender'] = $member->gender ?: 'male';
+        }
+        if (empty($data['marital_status']) || !in_array($data['marital_status'], ['single', 'married', 'divorced', 'widowed', 'widower'])) {
+            $data['marital_status'] = $member->marital_status ?: 'single';
+        }
+        if (empty($data['member_type']) || !in_array($data['member_type'], ['householder', 'non_householder', 'child', 'sibling'])) {
+            $data['member_type'] = $member->member_type ?: 'householder';
+        }
+        if (empty($data['status']) || !in_array($data['status'], ['active', 'inactive'])) {
+            $data['status'] = $member->status ?: 'active';
+        }
 
-            if ($request->input('is_deceased') && !$oldDeceased && $member->spouse_id) {
-                $spouse = Member::find($member->spouse_id);
-                if ($spouse) {
-                    $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
-                    $spouse->save();
+        // 3. Normalize Date & Numeric fields
+        $data['is_deceased'] = !empty($data['is_deceased']) ? 1 : 0;
+        $data['date_of_birth'] = $this->sanitizeDate($data['date_of_birth'] ?? null);
+        $data['death_date'] = $data['is_deceased'] ? $this->sanitizeDate($data['death_date'] ?? null) : null;
+        $data['card_received'] = (!empty($data['card_received']) && is_numeric($data['card_received'])) ? (int) $data['card_received'] : null;
+
+        // 4. Safe Foreign Keys
+        if (!empty($data['community_id'])) {
+            $commExists = Community::where('id', $data['community_id'])->exists();
+            $data['community_id'] = $commExists ? (int) $data['community_id'] : $member->community_id;
+        } else {
+            $data['community_id'] = $member->community_id;
+        }
+
+        if (!empty($data['parent_id'])) {
+            $data['parent_id'] = Member::where('id', $data['parent_id'])->where('id', '!=', $member->id)->exists() ? (int) $data['parent_id'] : null;
+        } else {
+            $data['parent_id'] = null;
+        }
+
+        if (!empty($data['spouse_id'])) {
+            $data['spouse_id'] = Member::where('id', $data['spouse_id'])->where('id', '!=', $member->id)->exists() ? (int) $data['spouse_id'] : null;
+        } else {
+            $data['spouse_id'] = null;
+        }
+
+        // 5. Handle Profile Picture
+        if (!file_exists(public_path('profiles'))) {
+            @mkdir(public_path('profiles'), 0777, true);
+        }
+
+        if ($request->hasFile('profile_picture')) {
+            try {
+                if ($member->profile_picture && file_exists(public_path('profiles/' . $member->profile_picture))) {
+                    @unlink(public_path('profiles/' . $member->profile_picture));
                 }
-            } elseif (!$request->input('is_deceased') && $oldDeceased && $member->spouse_id) {
-                $spouse = Member::find($member->spouse_id);
-                if ($spouse && $spouse->is_deceased) {
-                    $member->marital_status = $spouse->gender === 'male' ? 'widowed' : 'widower';
-                    $member->save();
+                $file = $request->file('profile_picture');
+                $ext = strtolower($file->getClientOriginalExtension());
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                    $ext = 'jpg';
                 }
+                $filename = uniqid('prof_') . '.' . $ext;
+                $file->move(public_path('profiles'), $filename);
+                $data['profile_picture'] = $filename;
+            } catch (\Throwable $e) {
+                Log::warning('Profile picture update failed: ' . $e->getMessage());
             }
+        } elseif (!empty($request->input('captured_image')) && str_starts_with($request->input('captured_image'), 'data:image')) {
+            try {
+                if ($member->profile_picture && file_exists(public_path('profiles/' . $member->profile_picture))) {
+                    @unlink(public_path('profiles/' . $member->profile_picture));
+                }
+                $captured = $request->input('captured_image');
+                $parts = explode(';base64,', $captured);
+                if (count($parts) === 2) {
+                    $extParts = explode('image/', $parts[0]);
+                    $ext = $extParts[1] ?? 'png';
+                    $ext = explode('+', $ext)[0];
+                    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                        $ext = 'png';
+                    }
+                    $filename = uniqid('cam_') . '.' . $ext;
+                    file_put_contents(public_path('profiles/' . $filename), base64_decode($parts[1]));
+                    $data['profile_picture'] = $filename;
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Captured image update failed: ' . $e->getMessage());
+            }
+        }
 
-            AuditLog::create([
-                'user_id' => auth()->id(),
-                'action' => 'Updated member ' . $member->name,
-            ]);
-        });
+        unset($data['captured_image']);
 
-        return redirect()->route('members.index')->with('success', 'Member updated successfully.');
+        try {
+            DB::transaction(function () use ($request, $member, $data) {
+                $oldDeceased = $member->is_deceased;
+                $oldSpouseId = $member->spouse_id;
+                $member->update($data);
+
+                // Bidirectional spouse linking
+                if (!empty($member->spouse_id) && $member->spouse_id != $oldSpouseId) {
+                    $newSpouse = Member::find($member->spouse_id);
+                    if ($newSpouse && $newSpouse->spouse_id != $member->id) {
+                        $newSpouse->spouse_id = $member->id;
+                        $newSpouse->marital_status = 'married';
+                        $newSpouse->save();
+                    }
+                } elseif (empty($member->spouse_id) && !empty($oldSpouseId)) {
+                    $oldSpouse = Member::find($oldSpouseId);
+                    if ($oldSpouse && $oldSpouse->spouse_id == $member->id) {
+                        $oldSpouse->spouse_id = null;
+                        $oldSpouse->save();
+                    }
+                }
+
+                if ($request->input('is_deceased') && !$oldDeceased && $member->spouse_id) {
+                    $spouse = Member::find($member->spouse_id);
+                    if ($spouse) {
+                        $spouse->marital_status = $member->gender === 'male' ? 'widowed' : 'widower';
+                        $spouse->save();
+                    }
+                } elseif (!$request->input('is_deceased') && $oldDeceased && $member->spouse_id) {
+                    $spouse = Member::find($member->spouse_id);
+                    if ($spouse && $spouse->is_deceased) {
+                        $member->marital_status = $spouse->gender === 'male' ? 'widowed' : 'widower';
+                        $member->save();
+                    }
+                }
+
+                if (auth()->check()) {
+                    AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => mb_substr('Updated member ' . ($member->name ?? 'N/A'), 0, 245),
+                    ]);
+                }
+            });
+
+            return redirect()->route('members.index')->with('success', 'Member kamiyabi se update ho gaya hai (Member updated successfully).');
+        } catch (\Throwable $e) {
+            \Log::error('Member update error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return redirect()->back()->withInput()->with('error', 'Member update nahi ho saka: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Member $member)
@@ -209,10 +501,12 @@ class MemberController extends Controller
         $name = $member->name;
         $member->delete();
 
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'Deleted member ' . $name,
-        ]);
+        if (auth()->check()) {
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => mb_substr('Deleted member ' . $name, 0, 245),
+            ]);
+        }
 
         return redirect()->route('members.index')->with('success', 'Member deleted successfully.');
     }
@@ -254,7 +548,7 @@ class MemberController extends Controller
 
     public function downloadPdf(Member $member)
     {
-        $member = Member::with(['community', 'parent', 'spouse', 'children'])->findOrFail($member->id);
+        $member = Member::with(['community', 'parent.spouse', 'spouse'])->findOrFail($member->id);
         $pdf = MpdfPdf::loadView('members.pdf', compact('member'));
         return $pdf->download('member-details-' . $member->id . '.pdf');
     }
@@ -406,18 +700,14 @@ class MemberController extends Controller
             $addedNodes[] = 'spouse_' . $spouse->id;
         }
 
-        foreach ($member->children as $child) {
+        foreach ($member->family_children as $child) {
             $childNode = $this->buildTreeData($child, $visited, 'Child');
             if ($childNode) {
                 $node['children'][] = $childNode;
             }
         }
 
-        $siblings = $member->parent_id
-            ? Member::where('parent_id', $member->parent_id)
-                ->where('id', '!=', $member->id)
-                ->get()
-            : collect();
+        $siblings = $member->siblings;
         foreach ($siblings as $sibling) {
             if (!in_array('sibling_' . $sibling->id, $addedNodes)) {
                 $siblingType = ucfirst(str_replace('_', ' ', $sibling->member_type)) . ' / ' . $this->memberTypeUrdu($sibling->member_type);

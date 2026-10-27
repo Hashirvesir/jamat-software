@@ -50,10 +50,14 @@
                     <tbody>
                         @forelse($members as $member)
                             <tr>
-                                <td>{{ $member->name }}</td>
+                                <td>
+                                    <a href="{{ route('members.show', $member) }}" class="fw-bold text-primary text-decoration-none">
+                                        {{ $member->name }}
+                                    </a>
+                                </td>
                                 <td>{{ $member->cnic ?? 'N/A' }}</td>
                                 <td>{{ $member->b_form_number ?? 'N/A' }}</td>
-                                <td>{{ $member->community->name }}</td>
+                                <td>{{ $member->community?->name ?? 'N/A' }}</td>
                                 <td>{{ $memberTypeLabels[$member->member_type] ?? ucfirst(str_replace('_', ' ', $member->member_type)) }}</td>
                                 <td>
                                     <a href="{{ route('members.family-tree', $member) }}"

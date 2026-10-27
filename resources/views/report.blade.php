@@ -57,7 +57,11 @@
                 <tbody>
                     @forelse($members as $member)
                         <tr>
-                            <td>{{ $member->name }}</td>
+                            <td>
+                                <a href="{{ route('members.show', $member) }}" class="fw-bold text-primary text-decoration-none">
+                                    {{ $member->name }}
+                                </a>
+                            </td>
                             <td>{{ $member->cnic ?? 'N/A' }}</td>
                             <td>{{ $member->community->name ?? 'N/A' }}</td>
                             <td>{{ $member->marital_status }}</td>

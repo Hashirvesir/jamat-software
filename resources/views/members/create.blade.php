@@ -66,11 +66,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Name <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">نام <span class="text-danger">*</span></span>
+                            <span>Name</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">نام</span>
                         </label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}"
-                            required>
+                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label d-flex justify-content-between align-items-center">
@@ -128,10 +127,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="gender" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Gender <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">جنس <span class="text-danger">*</span></span>
+                            <span>Gender</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">جنس</span>
                         </label>
-                        <select name="gender" id="gender" class="form-select" required>
+                        <select name="gender" id="gender" class="form-select">
                             <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male / مرد</option>
                             <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female / عورت</option>
                             <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other / دیگر</option>
@@ -145,15 +144,14 @@
                             <span dir="rtl" class="text-secondary fw-semibold">شناختی کارڈ نمبر</span>
                         </label>
                         <input type="text" name="cnic" id="cnic" class="form-control"
-                            value="{{ old('cnic') }}" pattern="\d{5}-\d{7}-\d{1}"
-                            title="CNIC must be in format xxxxx-xxxxxxx-x">
+                            value="{{ old('cnic') }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="marital_status" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Marital Status <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ازدواجی حیثیت <span class="text-danger">*</span></span>
+                            <span>Marital Status</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ازدواجی حیثیت</span>
                         </label>
-                        <select name="marital_status" id="marital_status" class="form-select" required>
+                        <select name="marital_status" id="marital_status" class="form-select">
                             <option value="single" {{ old('marital_status') == 'single' ? 'selected' : '' }}>Single / غیر شادی شدہ</option>
                             <option value="married" {{ old('marital_status') == 'married' ? 'selected' : '' }}>Married / شادی شدہ</option>
                             <option value="divorced" {{ old('marital_status') == 'divorced' ? 'selected' : '' }}>Divorced / طلاق یافتہ</option>
@@ -165,10 +163,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="community_id" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Community <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">برادری / جماعت <span class="text-danger">*</span></span>
+                            <span>Community</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">برادری / جماعت</span>
                         </label>
-                        <select name="community_id" id="community_id" class="form-select" required>
+                        <select name="community_id" id="community_id" class="form-select">
                             @foreach ($communities as $community)
                                 <option value="{{ $community->id }}"
                                     {{ old('community_id') == $community->id ? 'selected' : '' }}>{{ $community->name }}
@@ -178,10 +176,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="member_type" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Member Type <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ممبر کی قسم <span class="text-danger">*</span></span>
+                            <span>Member Type</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ممبر کی قسم</span>
                         </label>
-                        <select name="member_type" id="member_type" class="form-select" required>
+                        <select name="member_type" id="member_type" class="form-select">
                             <option value="householder" {{ old('member_type') == 'householder' ? 'selected' : '' }}>Householder / سربراہِ خاندان</option>
                             <option value="non_householder" {{ old('member_type') == 'non_householder' ? 'selected' : '' }}>Non-Householder / غیر سربراہ</option>
                             <option value="child" {{ old('member_type') == 'child' ? 'selected' : '' }}>Child / بچہ</option>
@@ -190,12 +188,12 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="parent_id" class="form-label d-flex justify-content-between align-items-center">
                             <span>Parent (Search by CNIC or select)</span>
                             <span dir="rtl" class="text-secondary fw-semibold">والدین (شناختی کارڈ سے تلاش کریں)</span>
                         </label>
-                        <select name="parent_id" id="parent_id" class="form-select select2-cnic">
+                        <select name="parent_id" id="parent_id" class="form-select select2-cnic" style="width: 100%;">
                             <option value="">None / کوئی نہیں</option>
                             @if ($selectedParent)
                                 <option value="{{ $selectedParent->id }}" selected
@@ -205,20 +203,118 @@
                             @endif
                         </select>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="spouse_id" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Spouse (Search by CNIC or select)</span>
-                            <span dir="rtl" class="text-secondary fw-semibold">شریکِ حیات (شناختی کارڈ سے تلاش کریں)</span>
-                        </label>
-                        <select name="spouse_id" id="spouse_id" class="form-select select2-cnic">
-                            <option value="">None / کوئی نہیں</option>
-                            @if ($selectedSpouse)
-                                <option value="{{ $selectedSpouse->id }}" selected
-                                    data-cnic="{{ $selectedSpouse->cnic }}">{{ $selectedSpouse->name }}
-                                    ({{ $selectedSpouse->cnic ?? 'No CNIC' }})
-                                </option>
-                            @endif
-                        </select>
+                </div>
+
+                <!-- Spouse Section (Shown when Married) -->
+                <div class="card mb-4 border-primary shadow-sm" id="spouseSection" style="display: {{ old('marital_status') == 'married' ? 'block' : 'none' }};">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+                        <h6 class="mb-0 fw-bold">Spouse Details</h6>
+                        <span dir="rtl" class="fw-semibold">شریکِ حیات کی تفصیلات</span>
+                    </div>
+                    <div class="card-body bg-light-subtle">
+                        <div class="d-flex mb-3 gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="spouse_type" id="spouse_type_new" value="new" {{ old('spouse_type', 'new') == 'new' ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="spouse_type_new">
+                                    Add New Spouse / نیا شریکِ حیات شامل کریں
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="spouse_type" id="spouse_type_existing" value="existing" {{ old('spouse_type') == 'existing' ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="spouse_type_existing">
+                                    Select Existing Member / موجودہ ممبر منتخب کریں
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Existing Spouse Selector -->
+                        <div id="existingSpouseBlock" style="display: {{ old('spouse_type') == 'existing' ? 'block' : 'none' }};">
+                            <div class="mb-2">
+                                <label for="spouse_id" class="form-label d-flex justify-content-between align-items-center">
+                                    <span>Select Spouse (Search by CNIC or Name)</span>
+                                    <span dir="rtl" class="text-secondary fw-semibold">شریکِ حیات تلاش کریں</span>
+                                </label>
+                                <select name="spouse_id" id="spouse_id" class="form-select select2-cnic" style="width: 100%;">
+                                    <option value="">None / کوئی نہیں</option>
+                                    @if ($selectedSpouse)
+                                        <option value="{{ $selectedSpouse->id }}" selected
+                                            data-cnic="{{ $selectedSpouse->cnic }}">{{ $selectedSpouse->name }}
+                                            ({{ $selectedSpouse->cnic ?? 'No CNIC' }})
+                                        </option>
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- New Spouse Form Inputs -->
+                        <div id="newSpouseBlock" style="display: {{ old('spouse_type', 'new') == 'new' ? 'block' : 'none' }};">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_name" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Spouse Name</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">شریکِ حیات کا نام</span>
+                                    </label>
+                                    <input type="text" name="spouse_name" id="spouse_name" class="form-control"
+                                        value="{{ old('spouse_name') }}" placeholder="Spouse Full Name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_gender" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Gender</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">جنس</span>
+                                    </label>
+                                    <select name="spouse_gender" id="spouse_gender" class="form-select">
+                                        <option value="female" {{ old('spouse_gender', 'female') == 'female' ? 'selected' : '' }}>Female / عورت</option>
+                                        <option value="male" {{ old('spouse_gender') == 'male' ? 'selected' : '' }}>Male / مرد</option>
+                                        <option value="other" {{ old('spouse_gender') == 'other' ? 'selected' : '' }}>Other / دیگر</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_cnic" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>CNIC</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">شناختی کارڈ نمبر</span>
+                                    </label>
+                                    <input type="text" name="spouse_cnic" id="spouse_cnic" class="form-control"
+                                        value="{{ old('spouse_cnic') }}" placeholder="e.g., 42301-xxxxxxx-x">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_phone" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Phone</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">فون نمبر</span>
+                                    </label>
+                                    <input type="text" name="spouse_phone" id="spouse_phone" class="form-control"
+                                        value="{{ old('spouse_phone') }}" placeholder="e.g., 03001234567">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_date_of_birth" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Date of Birth</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش</span>
+                                    </label>
+                                    <input type="date" name="spouse_date_of_birth" id="spouse_date_of_birth" class="form-control"
+                                        value="{{ old('spouse_date_of_birth') }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="spouse_blood_group" class="form-label d-flex justify-content-between align-items-center">
+                                        <span>Blood Group</span>
+                                        <span dir="rtl" class="text-secondary fw-semibold">بلڈ گروپ</span>
+                                    </label>
+                                    <select name="spouse_blood_group" id="spouse_blood_group" class="form-select">
+                                        <option value="">Select Blood Group / بلڈ گروپ منتخب کریں</option>
+                                        <option value="A+" {{ old('spouse_blood_group') == 'A+' ? 'selected' : '' }}>A+</option>
+                                        <option value="A-" {{ old('spouse_blood_group') == 'A-' ? 'selected' : '' }}>A-</option>
+                                        <option value="B+" {{ old('spouse_blood_group') == 'B+' ? 'selected' : '' }}>B+</option>
+                                        <option value="B-" {{ old('spouse_blood_group') == 'B-' ? 'selected' : '' }}>B-</option>
+                                        <option value="AB+" {{ old('spouse_blood_group') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                        <option value="AB-" {{ old('spouse_blood_group') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                        <option value="O+" {{ old('spouse_blood_group') == 'O+' ? 'selected' : '' }}>O+</option>
+                                        <option value="O-" {{ old('spouse_blood_group') == 'O-' ? 'selected' : '' }}>O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -231,11 +327,11 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="date_of_birth" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Date of Birth <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش <span class="text-danger">*</span></span>
+                            <span>Date of Birth</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش</span>
                         </label>
                         <input type="date" name="date_of_birth" id="date_of_birth" class="form-control"
-                            value="{{ old('date_of_birth') }}" required>
+                            value="{{ old('date_of_birth') }}">
                     </div>
                 </div>
                 <div class="row">
@@ -262,7 +358,7 @@
                             <span dir="rtl" class="text-secondary fw-semibold">کارڈ وصولی تعداد</span>
                         </label>
                         <input type="number" name="card_received" id="card_received" class="form-control"
-                            value="{{ old('card_received') }}" min="1">
+                            value="{{ old('card_received') }}">
                     </div>
                 </div>
                 <div class="row">
@@ -272,15 +368,14 @@
                             <span dir="rtl" class="text-secondary fw-semibold">ب فارم نمبر</span>
                         </label>
                         <input type="text" name="b_form_number" id="b_form_number" class="form-control"
-                            value="{{ old('b_form_number') }}" pattern="\d{5}-\d{7}-\d{1}"
-                            title="B-Form Number must be in format xxxxx-xxxxxxx-x">
+                            value="{{ old('b_form_number') }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="country" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Country <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ملک <span class="text-danger">*</span></span>
+                            <span>Country</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ملک</span>
                         </label>
-                        <select name="country" id="country" class="form-select" required>
+                        <select name="country" id="country" class="form-select">
                             <option value="">Select Country / ملک منتخب کریں</option>
                             <option value="Pakistan" {{ old('country') == 'Pakistan' ? 'selected' : '' }}>Pakistan / پاکستان</option>
                             <option value="India" {{ old('country') == 'India' ? 'selected' : '' }}>India / بھارت</option>
@@ -306,23 +401,96 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="education" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Education <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">تعلیم <span class="text-danger">*</span></span>
+                            <span>Education</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تعلیم</span>
                         </label>
                         <input type="text" name="education" id="education" class="form-control"
-                            value="{{ old('education') }}" required>
+                            value="{{ old('education') }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="skill" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Skill <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ہنر / مہارت <span class="text-danger">*</span></span>
+                            <span>Skill</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ہنر / مہارت</span>
                         </label>
                         <input type="text" name="skill" id="skill" class="form-control"
-                            value="{{ old('skill') }}" required>
+                            value="{{ old('skill') }}">
                     </div>
                 </div>
+
+                <!-- Children Section -->
+                <div class="card mb-4 border-success shadow-sm" id="childrenSection">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <h6 class="mb-0 fw-bold d-inline-block">Children Details</h6>
+                            <small class="ms-2 opacity-75">(Add multiple children / ایک سے زیادہ بچے شامل کریں)</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span dir="rtl" class="fw-semibold">بچوں کی تفصیلات</span>
+                            <button type="button" class="btn btn-sm btn-light text-success fw-bold px-3" id="addChildBtn">
+                                + Add Child / بچہ شامل کریں
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body bg-light-subtle p-3">
+                        <div id="noChildrenNotice" class="text-muted text-center py-3 {{ old('children') ? 'd-none' : '' }}">
+                            No children added yet. Click <strong>"+ Add Child / بچہ شامل کریں"</strong> to add children.
+                            <br><span dir="rtl" class="small">اگر اس ممبر کے بچے ہیں تو اوپر دیئے گئے بٹن "+ Add Child" پر کلک کریں۔</span>
+                        </div>
+                        <div id="childrenContainer">
+                            @if (old('children'))
+                                @foreach (old('children') as $idx => $child)
+                                    <div class="child-row card mb-3 border shadow-sm bg-white" data-index="{{ $idx }}">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-1 px-3">
+                                            <span class="fw-bold text-success">Child #<span class="child-number">{{ $loop->iteration }}</span></span>
+                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 remove-child-btn">
+                                                &times; Remove / حذف کریں
+                                            </button>
+                                        </div>
+                                        <div class="card-body py-2 px-3">
+                                            <div class="row">
+                                                <div class="col-md-3 mb-2">
+                                                    <label class="form-label small fw-semibold">Child Name / بچے کا نام</label>
+                                                    <input type="text" name="children[{{ $idx }}][name]" class="form-control form-control-sm"
+                                                        value="{{ $child['name'] ?? '' }}" placeholder="Child Name">
+                                                </div>
+                                                <div class="col-md-2 mb-2">
+                                                    <label class="form-label small fw-semibold">Gender / جنس</label>
+                                                    <select name="children[{{ $idx }}][gender]" class="form-select form-select-sm">
+                                                        <option value="male" {{ ($child['gender'] ?? '') == 'male' ? 'selected' : '' }}>Male / لڑکا</option>
+                                                        <option value="female" {{ ($child['gender'] ?? '') == 'female' ? 'selected' : '' }}>Female / لڑکی</option>
+                                                        <option value="other" {{ ($child['gender'] ?? '') == 'other' ? 'selected' : '' }}>Other / دیگر</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 mb-2">
+                                                    <label class="form-label small fw-semibold">Date of Birth / تاریخِ پیدائش</label>
+                                                    <input type="date" name="children[{{ $idx }}][date_of_birth]" class="form-control form-control-sm"
+                                                        value="{{ $child['date_of_birth'] ?? '' }}">
+                                                </div>
+                                                <div class="col-md-2 mb-2">
+                                                    <label class="form-label small fw-semibold">B-Form / CNIC</label>
+                                                    <input type="text" name="children[{{ $idx }}][b_form_number]" class="form-control form-control-sm"
+                                                        value="{{ $child['b_form_number'] ?? '' }}" placeholder="e.g., 42101-xxxxxxx-x">
+                                                </div>
+                                                <div class="col-md-2 mb-2">
+                                                    <label class="form-label small fw-semibold">Blood Group / بلڈ گروپ</label>
+                                                    <select name="children[{{ $idx }}][blood_group]" class="form-select form-select-sm">
+                                                        <option value="">Select</option>
+                                                        @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $bg)
+                                                            <option value="{{ $bg }}" {{ ($child['blood_group'] ?? '') == $bg ? 'selected' : '' }}>{{ $bg }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label for="description" class="form-label d-flex justify-content-between align-items-center">
                         <span>Description</span>
@@ -338,49 +506,47 @@
                     </div>
                     <span dir="rtl" class="text-secondary fw-semibold">انتقال شدہ / وفات</span>
                 </div>
-                <button type="submit" class="btn btn-primary">Save Member / ممبر محفوظ کریں</button>
-                <a href="{{ route('members.index') }}" class="btn btn-secondary ms-2">Cancel / منسوخ کریں</a>
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold" id="submitBtn">Save Member / ممبر محفوظ کریں</button>
+                <a href="{{ route('members.index') }}" class="btn btn-secondary ms-2 px-3 py-2">Cancel / منسوخ کریں</a>
             </form>
         </div>
     </div>
 
     <!-- Profile Picture Modal -->
-    <div class="modal fade" id="profileModal" aria-labelledby="profileModalLabel" aria-hidden="true" inert>
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="profileModalLabel">Add Profile Picture</h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="profileModalLabel">Add Profile Picture / تصویر شامل کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <button type="button" class="btn btn-secondary w-100 mb-2" id="selectPicture">Select
-                        Picture</button>
-                    <button type="button" class="btn btn-info w-100" id="openCamera">Open Camera</button>
+                    <button type="button" class="btn btn-secondary w-100 mb-2" id="selectPicture">Select Picture / فائل سے منتخب کریں</button>
+                    <button type="button" class="btn btn-info w-100 text-white" id="openCamera">Open Camera / کیمرہ کھولیں</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Camera Modal -->
-    <div class="modal fade" id="cameraModal" aria-labelledby="cameraModalLabel" aria-hidden="true" inert>
+    <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="cameraModalLabel">Capture Photo</h5>
-                    <button type="button" class="btn-close" id="cameraModalClose" data-dismiss="modal"
-                        aria-label="Close"></button>
+                    <h5 class="modal-title" id="cameraModalLabel">Capture Photo / تصویر کھینچیں</h5>
+                    <button type="button" class="btn-close" id="cameraModalClose" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <video id="video" width="100%" height="400" autoplay></video>
+                    <video id="video" width="100%" height="400" autoplay playsinline></video>
                     <canvas id="canvas" style="display:none;"></canvas>
                     <div class="text-center mt-3">
-                        <button type="button" class="btn btn-success" id="capture">Capture</button>
-                        <button type="button" class="btn btn-secondary ml-2" id="retake">Retake</button>
+                        <button type="button" class="btn btn-success" id="capture">Capture / تصویر لیں</button>
+                        <button type="button" class="btn btn-secondary ms-2" id="retake">Retake / دوبارہ لیں</button>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="usePhoto">Use Photo</button>
-                    <button type="button" class="btn btn-danger" id="cancelCamera">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="usePhoto" data-bs-dismiss="modal">Use Photo / تصویر استعمال کریں</button>
+                    <button type="button" class="btn btn-danger" id="cancelCamera" data-bs-dismiss="modal">Cancel / منسوخ</button>
                 </div>
             </div>
         </div>
@@ -388,10 +554,6 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/wicg-inert@3.1.2/dist/inert.min.js"></script>
     <script>
         $(document).ready(function() {
             // Select2 initialization
@@ -432,119 +594,131 @@
                 }
             });
 
-            // CNIC validation
-            $('#cnic').on('input', function() {
-                const cnic = $(this).val();
-                const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
-                if (cnic && !cnicRegex.test(cnic)) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">CNIC must be in format xxxxx-xxxxxxx-x</div>');
+            // Toggle Spouse Section based on Marital Status
+            function checkMaritalStatus() {
+                if ($('#marital_status').val() === 'married') {
+                    $('#spouseSection').slideDown();
                 } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
+                    $('#spouseSection').slideUp();
+                }
+            }
+            $('#marital_status').on('change', checkMaritalStatus);
+            checkMaritalStatus(); // initial check
+
+            // Toggle between New Spouse vs Existing Member dropdown
+            $('input[name="spouse_type"]').on('change', function() {
+                if ($(this).val() === 'new') {
+                    $('#newSpouseBlock').slideDown();
+                    $('#existingSpouseBlock').slideUp();
+                } else {
+                    $('#newSpouseBlock').slideUp();
+                    $('#existingSpouseBlock').slideDown();
                 }
             });
 
-            // Phone validation (Optional)
-            $('#phone').on('input', function() {
-                const phone = $(this).val();
-                if (phone && phone.length > 20) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">Phone number is too long</div>');
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
+            // Auto-set spouse gender opposite to main member gender
+            $('#gender').on('change', function() {
+                const memberGender = $(this).val();
+                if (memberGender === 'male') {
+                    $('#spouse_gender').val('female');
+                } else if (memberGender === 'female') {
+                    $('#spouse_gender').val('male');
                 }
             });
 
-            // B-Form Number validation
-            $('#b_form_number').on('input', function() {
-                const bForm = $(this).val();
-                const bFormRegex = /^\d{5}-\d{7}-\d{1}$/;
-                if (bForm && !bFormRegex.test(bForm)) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">B-Form Number must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
+            // Dynamic Children Logic
+            let childCounter = {{ old('children') ? count(old('children')) : 0 }};
+
+            $('#addChildBtn').on('click', function() {
+                $('#noChildrenNotice').addClass('d-none');
+                childCounter++;
+                const newIndex = childCounter;
+
+                const childHtml = `
+                    <div class="child-row card mb-3 border shadow-sm bg-white" data-index="${newIndex}">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-1 px-3">
+                            <span class="fw-bold text-success">Child #<span class="child-number"></span></span>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 remove-child-btn">
+                                &times; Remove / حذف کریں
+                            </button>
+                        </div>
+                        <div class="card-body py-2 px-3">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label small fw-semibold">Child Name / بچے کا نام</label>
+                                    <input type="text" name="children[${newIndex}][name]" class="form-control form-control-sm" placeholder="Child Name">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small fw-semibold">Gender / جنس</label>
+                                    <select name="children[${newIndex}][gender]" class="form-select form-select-sm">
+                                        <option value="male">Male / لڑکا</option>
+                                        <option value="female">Female / لڑکی</option>
+                                        <option value="other">Other / دیگر</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label small fw-semibold">Date of Birth / تاریخِ پیدائش</label>
+                                    <input type="date" name="children[${newIndex}][date_of_birth]" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small fw-semibold">B-Form / CNIC</label>
+                                    <input type="text" name="children[${newIndex}][b_form_number]" class="form-control form-control-sm" placeholder="e.g., 42101-xxxxxxx-x">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label small fw-semibold">Blood Group / بلڈ گروپ</label>
+                                    <select name="children[${newIndex}][blood_group]" class="form-select form-select-sm">
+                                        <option value="">Select</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $('#childrenContainer').append(childHtml);
+                renumberChildren();
             });
 
-            // Death Date enable/disable logic (Optional)
+            // Remove child handler
+            $(document).on('click', '.remove-child-btn', function() {
+                $(this).closest('.child-row').remove();
+                if ($('#childrenContainer .child-row').length === 0) {
+                    $('#noChildrenNotice').removeClass('d-none');
+                }
+                renumberChildren();
+            });
+
+            function renumberChildren() {
+                $('#childrenContainer .child-row').each(function(i) {
+                    $(this).find('.child-number').text(i + 1);
+                });
+            }
             $('#is_deceased').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('#death_date').prop('disabled', false);
-                    $('#death_date').prop('required', false);
                 } else {
                     $('#death_date').prop('disabled', true);
-                    $('#death_date').prop('required', false);
                     $('#death_date').val('');
                 }
             });
 
-            // Member type change logic - clear errors if child
-            $('#member_type').on('change', function() {
-                if ($(this).val() === 'child') {
-                    $('#cnic').removeClass('is-invalid');
-                    $('#b_form_number').removeClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                }
-            });
-
-            // CNIC or B-Form validation (at least one required, except for child)
-            $('#memberForm').on('submit', function(e) {
-                const cnic = $('#cnic').val();
-                const bForm = $('#b_form_number').val();
-                const memberType = $('#member_type').val();
-                const isChild = memberType === 'child';
-                const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
-                const bFormRegex = /^\d{5}-\d{7}-\d{1}$/;
-
-                if (!isChild && !cnic && !bForm) {
-                    e.preventDefault();
-                    $('#cnic').addClass('is-invalid');
-                    $('#b_form_number').addClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                    $('#cnic').after(
-                        '<div class="invalid-feedback">Either CNIC or B-Form Number is required.</div>'
-                    );
-                    $('#b_form_number').after(
-                        '<div class="invalid-feedback">Either CNIC or B-Form Number is required.</div>'
-                    );
-                } else if (cnic && !cnicRegex.test(cnic)) {
-                    e.preventDefault();
-                    $('#cnic').addClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#cnic').after(
-                        '<div class="invalid-feedback">CNIC must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else if (bForm && !bFormRegex.test(bForm)) {
-                    e.preventDefault();
-                    $('#b_form_number').addClass('is-invalid');
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                    $('#b_form_number').after(
-                        '<div class="invalid-feedback">B-Form Number must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else {
-                    $('#cnic').removeClass('is-invalid');
-                    $('#b_form_number').removeClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                }
-            });
+            // Bootstrap 5 Modal Instances
+            const profileModalEl = document.getElementById('profileModal');
+            const cameraModalEl = document.getElementById('cameraModal');
+            const profileModal = profileModalEl ? bootstrap.Modal.getOrCreateInstance(profileModalEl) : null;
+            const cameraModal = cameraModalEl ? bootstrap.Modal.getOrCreateInstance(cameraModalEl) : null;
 
             // Profile Modal Trigger
             $('#addProfile').on('click', function() {
-                $('#profileModal').modal('show');
+                if (profileModal) profileModal.show();
             });
 
             // Select Picture Handler
@@ -559,119 +733,52 @@
                     reader.onload = function(e) {
                         $('#capturedImage').val(e.target.result);
                         $('#imagePreview').html('<img src="' + e.target.result +
-                            '" alt="Preview" style="max-width: 100px; max-height: 100px;">');
+                            '" alt="Preview" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">');
                     };
                     reader.readAsDataURL(file);
-                    $('#profileModal').modal('hide');
+                    if (profileModal) profileModal.hide();
                 }
             });
 
             // Open Camera Handler
             $('#openCamera').on('click', function() {
-                $('#profileModal').modal('hide');
-                $('#cameraModal').modal('show');
+                if (profileModal) profileModal.hide();
+                if (cameraModal) cameraModal.show();
             });
 
-            // Modal accessibility handlers
-            $('#cameraModal').on('show.bs.modal', function() {
-                $(this).removeAttr('inert').removeAttr('aria-hidden');
-            });
+            let stream = null;
 
-            $('#cameraModal').on('shown.bs.modal', function() {
-                $('#capture').focus();
-                trapFocus($(this));
-                startCamera();
-            });
+            if (cameraModalEl) {
+                cameraModalEl.addEventListener('shown.bs.modal', function() {
+                    startCamera();
+                });
 
-            $('#cameraModal').on('hidden.bs.modal', function() {
-                $(this).attr('inert', '').attr('aria-hidden', 'true');
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    stream = null;
-                }
-                $('#openCamera').focus();
-            });
-
-            $('#profileModal').on('show.bs.modal', function() {
-                $(this).removeAttr('inert').removeAttr('aria-hidden');
-            });
-
-            $('#profileModal').on('shown.bs.modal', function() {
-                $('#selectPicture').focus();
-                trapFocus($(this));
-            });
-
-            $('#profileModal').on('hidden.bs.modal', function() {
-                $(this).attr('inert', '').attr('aria-hidden', 'true');
-                $('#addProfile').focus();
-            });
-
-            // Trap focus in modal
-            function trapFocus(modal) {
-                const focusableElements = modal.find(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                const firstFocusable = focusableElements.first();
-                const lastFocusable = focusableElements.last();
-
-                modal.on('keydown', function(e) {
-                    if (e.key === 'Tab') {
-                        if (e.shiftKey) {
-                            if (document.activeElement === firstFocusable[0]) {
-                                e.preventDefault();
-                                lastFocusable.focus();
-                            }
-                        } else {
-                            if (document.activeElement === lastFocusable[0]) {
-                                e.preventDefault();
-                                firstFocusable.focus();
-                            }
-                        }
+                cameraModalEl.addEventListener('hidden.bs.modal', function() {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                        stream = null;
                     }
                 });
             }
 
-            let stream = null;
-
             function startCamera() {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     alert('Camera access is not supported in this browser.');
-                    $('#cameraModal').modal('hide');
-                    return;
-                }
-
-                if (!window.isSecureContext) {
-                    alert(
-                        'Camera access requires a secure context (HTTPS or localhost). Please access this page over HTTPS.'
-                        );
-                    $('#cameraModal').modal('hide');
+                    if (cameraModal) cameraModal.hide();
                     return;
                 }
 
                 const video = document.getElementById('video');
-                navigator.mediaDevices.getUserMedia({
-                        video: true
-                    })
+                navigator.mediaDevices.getUserMedia({ video: true })
                     .then(function(s) {
                         stream = s;
                         video.srcObject = stream;
-                        video.onloadedmetadata = function() {
-                            video.play();
-                        };
+                        video.play();
                     })
                     .catch(function(err) {
                         console.error('Camera access error: ', err);
-                        let errorMessage = 'Unable to access the camera. Please allow camera permissions.';
-                        if (err.name === 'NotAllowedError') {
-                            errorMessage =
-                                'Camera access was denied. Please enable camera permissions in your browser settings and try again.';
-                        } else if (err.name === 'NotFoundError') {
-                            errorMessage =
-                                'No camera found. Please ensure a camera is connected and try again.';
-                        } else if (err.name === 'SecurityError') {
-                            errorMessage = 'Camera access requires a secure context (HTTPS or localhost).';
-                        }
-                        alert(errorMessage);
-                        $('#cameraModal').modal('hide');
+                        alert('Unable to access camera. Please check permissions or upload a file.');
+                        if (cameraModal) cameraModal.hide();
                     });
             }
 
@@ -680,13 +787,13 @@
                 const video = document.getElementById('video');
                 const canvas = document.getElementById('canvas');
                 const context = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/png');
                 $('#capturedImage').val(dataUrl);
                 $('#imagePreview').html('<img src="' + dataUrl +
-                    '" alt="Preview" style="max-width: 100px; max-height: 100px;">');
+                    '" alt="Preview" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">');
             });
 
             // Retake Photo
@@ -694,51 +801,18 @@
                 startCamera();
             });
 
-            // Use Photo
-            $('#usePhoto').on('click', function() {
-                $('#cameraModal').modal('hide');
-            });
-
-            // Cancel Camera
-            $('#cancelCamera').on('click', function() {
-                $('#cameraModal').modal('hide');
-            });
-
-            // Close Button Handler
-            $('#cameraModalClose').on('click', function() {
-                $('#cameraModal').modal('hide');
-            });
-
-            // Form submission handler to handle base64 image
+            // Double submission prevention & robust form submission
+            let formSubmitted = false;
             $('#memberForm').on('submit', function(e) {
-                const capturedImage = $('#capturedImage').val();
-                if (capturedImage && capturedImage.startsWith('data:image')) {
+                if (formSubmitted) {
                     e.preventDefault();
-                    const blob = dataURLtoBlob(capturedImage);
-                    const file = new File([blob], 'captured_image.png', {
-                        type: 'image/png'
-                    });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    $('#profile_picture')[0].files = dataTransfer.files;
-                    this.submit();
+                    return false;
                 }
+                formSubmitted = true;
+                $('#submitBtn')
+                    .prop('disabled', true)
+                    .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving Member... / ممبر محفوظ ہو رہا ہے...');
             });
-
-            // Convert data URL to Blob
-            function dataURLtoBlob(dataUrl) {
-                const arr = dataUrl.split(',');
-                const mime = arr[0].match(/:(.*?);/)[1];
-                const bstr = atob(arr[1]);
-                let n = bstr.length;
-                const u8arr = new Uint8Array(n);
-                while (n--) {
-                    u8arr[n] = bstr.charCodeAt(n);
-                }
-                return new Blob([u8arr], {
-                    type: mime
-                });
-            }
         });
     </script>
 @endsection

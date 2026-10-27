@@ -83,8 +83,12 @@
                                 <tbody>
                                     @forelse($recentMembers as $member)
                                         <tr>
-                                            <td>{{ $member->name }}</td>
-                                            <td>{{ $member->community->name }}</td>
+                                            <td>
+                                                <a href="{{ route('members.show', $member) }}" class="fw-bold text-primary text-decoration-none" title="View details">
+                                                    {{ $member->name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $member->community?->name ?? 'N/A' }}</td>
                                             <td>{{ $member->cnic ?? 'N/A' }}</td>
                                             <td>{{ $member->created_at->format('d M Y') }}</td>
                                         </tr>

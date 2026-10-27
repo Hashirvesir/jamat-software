@@ -7,7 +7,17 @@
     <title>Jamaat Management - @yield('title')</title>
     <link rel="icon" type="image/jpeg" href="{{ asset('logo.jpeg') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        .dropdown-menu {
+            z-index: 1050;
+        }
+    </style>
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     @yield('styles')
 </head>
@@ -86,6 +96,12 @@
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif

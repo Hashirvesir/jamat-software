@@ -77,11 +77,11 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Name <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">نام <span class="text-danger">*</span></span>
+                            <span>Name</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">نام</span>
                         </label>
                         <input type="text" name="name" id="name" class="form-control"
-                            value="{{ old('name', $member->name) }}" required>
+                            value="{{ old('name', $member->name) }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label d-flex justify-content-between align-items-center">
@@ -141,10 +141,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="gender" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Gender <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">جنس <span class="text-danger">*</span></span>
+                            <span>Gender</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">جنس</span>
                         </label>
-                        <select name="gender" id="gender" class="form-select" required>
+                        <select name="gender" id="gender" class="form-select">
                             <option value="male" {{ old('gender', $member->gender) == 'male' ? 'selected' : '' }}>Male / مرد
                             </option>
                             <option value="female" {{ old('gender', $member->gender) == 'female' ? 'selected' : '' }}>
@@ -161,15 +161,14 @@
                             <span dir="rtl" class="text-secondary fw-semibold">شناختی کارڈ نمبر</span>
                         </label>
                         <input type="text" name="cnic" id="cnic" class="form-control"
-                            value="{{ old('cnic', $member->cnic) }}" pattern="\d{5}-\d{7}-\d{1}"
-                            title="CNIC must be in format xxxxx-xxxxxxx-x">
+                            value="{{ old('cnic', $member->cnic) }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="marital_status" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Marital Status <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ازدواجی حیثیت <span class="text-danger">*</span></span>
+                            <span>Marital Status</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ازدواجی حیثیت</span>
                         </label>
-                        <select name="marital_status" id="marital_status" class="form-select" required>
+                        <select name="marital_status" id="marital_status" class="form-select">
                             <option value="single"
                                 {{ old('marital_status', $member->marital_status) == 'single' ? 'selected' : '' }}>Single / غیر شادی شدہ
                             </option>
@@ -191,10 +190,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="community_id" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Community <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">برادری / جماعت <span class="text-danger">*</span></span>
+                            <span>Community</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">برادری / جماعت</span>
                         </label>
-                        <select name="community_id" id="community_id" class="form-select" required>
+                        <select name="community_id" id="community_id" class="form-select">
                             @foreach ($communities as $community)
                                 <option value="{{ $community->id }}"
                                     {{ old('community_id', $member->community_id) == $community->id ? 'selected' : '' }}>
@@ -204,10 +203,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="member_type" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Member Type <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ممبر کی قسم <span class="text-danger">*</span></span>
+                            <span>Member Type</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ممبر کی قسم</span>
                         </label>
-                        <select name="member_type" id="member_type" class="form-select" required>
+                        <select name="member_type" id="member_type" class="form-select">
                             <option value="householder"
                                 {{ old('member_type', $member->member_type) == 'householder' ? 'selected' : '' }}>
                                 Householder / سربراہِ خاندان</option>
@@ -264,11 +263,11 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="date_of_birth" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Date of Birth <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش <span class="text-danger">*</span></span>
+                            <span>Date of Birth</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تاریخِ پیدائش</span>
                         </label>
                         <input type="date" name="date_of_birth" id="date_of_birth" class="form-control"
-                            value="{{ old('date_of_birth', $member->date_of_birth) }}" required>
+                            value="{{ old('date_of_birth', $member->date_of_birth) }}">
                     </div>
                 </div>
                 <div class="row">
@@ -303,7 +302,7 @@
                             <span dir="rtl" class="text-secondary fw-semibold">کارڈ وصولی تعداد</span>
                         </label>
                         <input type="number" name="card_received" id="card_received" class="form-control"
-                            value="{{ old('card_received', $member->card_received) }}" min="1">
+                            value="{{ old('card_received', $member->card_received) }}">
                     </div>
                 </div>
                 <div class="row">
@@ -313,15 +312,14 @@
                             <span dir="rtl" class="text-secondary fw-semibold">ب فارم نمبر</span>
                         </label>
                         <input type="text" name="b_form_number" id="b_form_number" class="form-control"
-                            value="{{ old('b_form_number', $member->b_form_number) }}" pattern="\d{5}-\d{7}-\d{1}"
-                            title="B-Form Number must be in format xxxxx-xxxxxxx-x">
+                            value="{{ old('b_form_number', $member->b_form_number) }}">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="country" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Country <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ملک <span class="text-danger">*</span></span>
+                            <span>Country</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ملک</span>
                         </label>
-                        <select name="country" id="country" class="form-select" required>
+                        <select name="country" id="country" class="form-select">
                             <option value="">Select Country / ملک منتخب کریں</option>
                             <option value="Pakistan"
                                 {{ old('country', $member->country) == 'Pakistan' ? 'selected' : '' }}>Pakistan / پاکستان</option>
@@ -360,21 +358,21 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="education" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Education <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">تعلیم <span class="text-danger">*</span></span>
+                            <span>Education</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">تعلیم</span>
                         </label>
                         <input type="text" name="education" id="education" class="form-control"
-                            value="{{ old('education', $member->education) }}" required>
+                            value="{{ old('education', $member->education) }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="skill" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Skill <span class="text-danger">*</span></span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ہنر / مہارت <span class="text-danger">*</span></span>
+                            <span>Skill</span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ہنر / مہارت</span>
                         </label>
                         <input type="text" name="skill" id="skill" class="form-control"
-                            value="{{ old('skill', $member->skill) }}" required>
+                            value="{{ old('skill', $member->skill) }}">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -441,9 +439,6 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.select2-cnic').select2({
@@ -484,113 +479,13 @@
                 }
             });
 
-            // CNIC validation
-            $('#cnic').on('input', function() {
-                const cnic = $(this).val();
-                const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
-                if (cnic && !cnicRegex.test(cnic)) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">CNIC must be in format xxxxx-xxxxxxx-x</div>');
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
-            });
-
-            // Phone validation (Optional)
-            $('#phone').on('input', function() {
-                const phone = $(this).val();
-                if (phone && phone.length > 20) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">Phone number is too long</div>');
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
-            });
-
-            // B-Form Number validation
-            $('#b_form_number').on('input', function() {
-                const bForm = $(this).val();
-                const bFormRegex = /^\d{5}-\d{7}-\d{1}$/;
-                if (bForm && !bFormRegex.test(bForm)) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after(
-                        '<div class="invalid-feedback">B-Form Number must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
-            });
-
             // Death Date enable/disable logic (Optional)
             $('#is_deceased').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('#death_date').prop('disabled', false);
-                    $('#death_date').prop('required', false);
                 } else {
                     $('#death_date').prop('disabled', true);
-                    $('#death_date').prop('required', false);
                     $('#death_date').val(''); // Clear the field when disabled
-                }
-            });
-
-            // Member type change logic - clear errors if child
-            $('#member_type').on('change', function() {
-                if ($(this).val() === 'child') {
-                    $('#cnic').removeClass('is-invalid');
-                    $('#b_form_number').removeClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                }
-            });
-
-            // CNIC or B-Form validation (at least one required, except for child)
-            $('#memberForm').on('submit', function(e) {
-                const cnic = $('#cnic').val();
-                const bForm = $('#b_form_number').val();
-                const memberType = $('#member_type').val();
-                const isChild = memberType === 'child';
-                const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
-                const bFormRegex = /^\d{5}-\d{7}-\d{1}$/;
-
-                if (!isChild && !cnic && !bForm) {
-                    e.preventDefault();
-                    $('#cnic').addClass('is-invalid');
-                    $('#b_form_number').addClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                    $('#cnic').after(
-                        '<div class="invalid-feedback">Either CNIC or B-Form Number is required.</div>'
-                    );
-                    $('#b_form_number').after(
-                        '<div class="invalid-feedback">Either CNIC or B-Form Number is required.</div>'
-                    );
-                } else if (cnic && !cnicRegex.test(cnic)) {
-                    e.preventDefault();
-                    $('#cnic').addClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#cnic').after(
-                        '<div class="invalid-feedback">CNIC must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else if (bForm && !bFormRegex.test(bForm)) {
-                    e.preventDefault();
-                    $('#b_form_number').addClass('is-invalid');
-                    $('#b_form_number').next('.invalid-feedback').remove();
-                    $('#b_form_number').after(
-                        '<div class="invalid-feedback">B-Form Number must be in format xxxxx-xxxxxxx-x</div>'
-                    );
-                } else {
-                    $('#cnic').removeClass('is-invalid');
-                    $('#b_form_number').removeClass('is-invalid');
-                    $('#cnic').next('.invalid-feedback').remove();
-                    $('#b_form_number').next('.invalid-feedback').remove();
                 }
             });
 

@@ -16,7 +16,7 @@
                 <input type="text" id="cnic_search" class="form-control" placeholder="Enter CNIC to search">
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -35,52 +35,77 @@
                     <tbody>
                         @forelse($members as $member)
                             <tr>
-                                <td>{{ $member->name }}</td>
+                                <td>
+                                    <a href="{{ route('members.show', $member) }}" class="fw-bold text-primary text-decoration-none" title="Click to view details">
+                                        {{ $member->name }}
+                                    </a>
+                                </td>
                                 <td>{{ $member->email ?? 'N/A' }}</td>
                                 <td>{{ $member->phone ?? 'N/A' }}</td>
-                                <td>{{ ucfirst($member->gender) }}</td>
+                                <td>{{ ucfirst((string)$member->gender) }}</td>
                                 <td>{{ $member->cnic ?? ($member->b_form_number ?? 'N/A') }}</td>
-                                <td>{{ $member->community->name }}</td>
-                                <td>{{ ucfirst($member->member_type) }}</td>
-                                <td>{{ $member->parent ? $member->parent->name : 'None' }}</td>
-                                <td>{{ $member->spouse ? $member->spouse->name : 'None' }}</td>
+                                <td>{{ $member->community?->name ?? 'N/A' }}</td>
+                                <td>{{ ucfirst(str_replace('_', ' ', (string)$member->member_type)) }}</td>
+                                <td>
+                                    @if ($member->parent)
+                                        <a href="{{ route('members.show', $member->parent->id) }}" class="text-decoration-none">
+                                            {{ $member->parent->name }}
+                                        </a>
+                                    @else
+                                        None
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($member->spouse)
+                                        <a href="{{ route('members.show', $member->spouse->id) }}" class="text-decoration-none">
+                                            {{ $member->spouse->name }}
+                                        </a>
+                                    @else
+                                        None
+                                    @endif
+                                </td>
                                 <td>{{ $member->is_deceased ? 'Yes' : 'No' }}</td>
                                 <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm" type="button"
-                                            id="dropdownMenuButton{{ $member->id }}" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                                            </svg>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $member->id }}">
-                                            @can('view members')
-                                                <li><a class="dropdown-item"
-                                                        href="{{ route('members.show', $member) }}">View</a></li>
-                                            @endcan
-                                            @can('edit members')
-                                                <li><a class="dropdown-item"
-                                                        href="{{ route('members.edit', $member) }}">Edit</a></li>
-                                            @endcan
-                                            @can('view members')
-                                                <li><a class="dropdown-item"
-                                                        href="{{ route('members.family-tree', $member) }}">Family Tree</a></li>
-                                            @endcan
-                                            @can('delete members')
-                                                <li>
-                                                    <form action="{{ route('members.destroy', $member) }}" method="POST"
-                                                        style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger"
-                                                            onclick="return confirm('Are you sure you want to delete {{ $member->name }}?')">Delete</button>
-                                                    </form>
-                                                </li>
-                                            @endcan
-                                        </ul>
+                                    <div class="d-flex align-items-center gap-1">
+                                        @can('view members')
+                                            <a href="{{ route('members.show', $member) }}" class="btn btn-sm btn-outline-primary py-1 px-2" title="View Member Details / تفصیلات دیکھیں">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        @endcan
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm py-1 px-2" type="button"
+                                                id="dropdownMenuButton{{ $member->id }}" data-bs-toggle="dropdown"
+                                                data-bs-boundary="window" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuButton{{ $member->id }}">
+                                                @can('view members')
+                                                    <li><a class="dropdown-item" href="{{ route('members.show', $member) }}"><i class="bi bi-eye text-primary me-2"></i>View Details / تفصیلات</a></li>
+                                                @endcan
+                                                @can('edit members')
+                                                    <li><a class="dropdown-item" href="{{ route('members.edit', $member) }}"><i class="bi bi-pencil text-warning me-2"></i>Edit / ترمیم</a></li>
+                                                @endcan
+                                                @can('view members')
+                                                    <li><a class="dropdown-item" href="{{ route('members.family-tree', $member) }}"><i class="bi bi-diagram-3 text-info me-2"></i>Family Tree / شجرۂ نسب</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('members.card', $member) }}"><i class="bi bi-person-badge text-success me-2"></i>ID Card / شناختی کارڈ</a></li>
+                                                    <li><a class="dropdown-item" href="{{ route('members.download-pdf', $member) }}"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>Download PDF / پی ڈی ایف</a></li>
+                                                @endcan
+                                                @can('delete members')
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form action="{{ route('members.destroy', $member) }}" method="POST"
+                                                            style="display:inline;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="dropdown-item text-danger"
+                                                                onclick="return confirm('Are you sure you want to delete {{ $member->name }}?')">
+                                                                <i class="bi bi-trash me-2"></i>Delete / حذف
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                @endcan
+                                            </ul>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
