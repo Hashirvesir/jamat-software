@@ -153,7 +153,7 @@
             <div class="mt-4 pt-2">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0 text-primary fw-bold">
-                        <i class="bi bi-heart-fill text-danger me-1"></i> Spouse Details / شریکِ حیات کی تفصیلات
+                        <i class="bi bi-person-fill me-1"></i> Spouse Details / شریکِ حیات کی تفصیلات
                     </h5>
                     @if ($member->spouse)
                         <a href="{{ route('members.show', $member->spouse->id) }}" class="btn btn-sm btn-outline-primary">
