@@ -1,11 +1,9 @@
 <style>
-    * {
-        box-sizing: border-box;
+    @page {
         margin: 0;
         padding: 0;
-        font-family: 'Helvetica Neue', Helvetica, Arial, urdu, noto, sans-serif;
     }
-    @page {
+    * {
         margin: 0;
         padding: 0;
     }
@@ -14,6 +12,7 @@
         padding: 0;
         background: #ffffff;
         color: #1a2b23;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 5.5pt;
     }
     .urdu {
@@ -22,133 +21,152 @@
     table {
         border-collapse: collapse;
     }
-    .card-table {
+    .card-outer {
         width: 100%;
         border-collapse: collapse;
     }
-    .card-header-row {
+
+    /* Header */
+    .hdr-tbl {
+        width: 100%;
+        border-collapse: collapse;
         background-color: #074e37;
-        border-bottom: 1.2pt solid #c59b27;
+        border-bottom: 1.5pt solid #c59b27;
     }
-    .card-title-main {
+    .hdr-logo {
+        width: 22pt;
+        padding: 2.5pt 2pt 2.5pt 4pt;
+        vertical-align: middle;
+    }
+    .hdr-title-box {
+        padding: 2.5pt 2pt;
+        vertical-align: middle;
+    }
+    .hdr-title-main {
         color: #ffffff;
-        font-size: 7.2pt;
+        font-size: 7.8pt;
         font-weight: bold;
-        letter-spacing: 0.3pt;
+        letter-spacing: 0.4pt;
         line-height: 1;
     }
-    .card-title-sub {
+    .hdr-title-sub {
         color: #ecd48f;
-        font-size: 3.8pt;
-        letter-spacing: 0.2pt;
-        margin-top: 1pt;
+        font-size: 4.2pt;
+        letter-spacing: 0.3pt;
+        margin-top: 1.2pt;
         line-height: 1;
     }
-    .card-id-badge {
+    .hdr-badge-box {
+        width: 72pt;
+        padding: 2.5pt 4pt 2.5pt 2pt;
+        text-align: right;
+        vertical-align: middle;
+    }
+    .hdr-badge {
         background-color: #053727;
-        border: 0.5pt solid #c59b27;
+        border: 0.6pt solid #c59b27;
         color: #ffffff;
-        font-size: 4.8pt;
+        font-size: 5.2pt;
         font-weight: bold;
-        padding: 1pt 3pt;
+        padding: 1.5pt 3.5pt;
         text-align: center;
         white-space: nowrap;
     }
-    .field-lbl {
-        font-size: 3.3pt;
-        text-transform: uppercase;
+
+    /* Key-Value Front Grid */
+    .kv-tbl {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .kv-lbl {
+        width: 44pt;
+        font-size: 5pt;
+        font-weight: bold;
         color: #586c63;
-        font-weight: bold;
-        line-height: 1;
-        margin-bottom: 0.2pt;
+        text-transform: uppercase;
+        padding: 2.2pt 0;
+        vertical-align: middle;
     }
-    .field-val-lg {
-        font-size: 7.2pt;
-        font-weight: bold;
-        color: #074e37;
-        border-bottom: 0.4pt solid #c59b27;
-        padding-bottom: 0.5pt;
-        margin-bottom: 1.2pt;
-        line-height: 1.1;
-    }
-    .field-val-md {
-        font-size: 5.8pt;
-        font-weight: bold;
-        color: #1a2b23;
-        border-bottom: 0.3pt solid #dce4df;
-        padding-bottom: 0.5pt;
-        margin-bottom: 1.2pt;
-        line-height: 1.1;
-    }
-    .field-val-sm {
-        font-size: 5.2pt;
-        font-weight: bold;
-        color: #1a2b23;
-        border-bottom: 0.3pt solid #dce4df;
-        padding-bottom: 0.4pt;
-        line-height: 1.1;
-    }
-    .field-val-cnic {
+    .kv-val {
         font-size: 6.5pt;
         font-weight: bold;
-        color: #074e37;
-        letter-spacing: 0.3pt;
-        border-bottom: 0.3pt solid #dce4df;
-        padding-bottom: 0.4pt;
-        margin-bottom: 1.2pt;
-        line-height: 1.1;
+        color: #1e293b;
+        padding: 2.2pt 0;
+        vertical-align: middle;
+        border-bottom: 0.3pt solid #e6ece8;
     }
-    .photo-frame {
+    .kv-val-name {
+        font-size: 7.8pt;
+        font-weight: bold;
+        color: #074e37;
+        padding: 2pt 0;
+        vertical-align: middle;
+        border-bottom: 0.4pt solid #c59b27;
+    }
+
+    /* Key-Value Back Grid */
+    .kv-lbl-back {
+        width: 56pt;
+        font-size: 4.8pt;
+        font-weight: bold;
+        color: #586c63;
+        text-transform: uppercase;
+        padding: 2pt 0;
+        vertical-align: middle;
+    }
+    .kv-val-back {
+        font-size: 5.8pt;
+        font-weight: bold;
+        color: #1e293b;
+        padding: 2pt 0;
+        vertical-align: middle;
+        border-bottom: 0.3pt solid #e6ece8;
+    }
+
+    /* Photo & Stamp */
+    .photo-box {
         width: 44pt;
-        height: 48pt;
+        height: 50pt;
         border: 0.8pt solid #074e37;
         background-color: #f2f6f4;
         margin: 0 auto;
+        text-align: center;
         overflow: hidden;
     }
     .type-badge {
         background-color: #074e37;
-        border: 0.4pt solid #c59b27;
+        border: 0.5pt solid #c59b27;
         color: #ffffff;
-        font-size: 3.6pt;
+        font-size: 4.2pt;
         font-weight: bold;
         text-align: center;
-        padding: 0.8pt 1pt;
-        margin-top: 1pt;
+        padding: 1.5pt 1pt;
+        margin-top: 2pt;
         line-height: 1.2;
+        border-radius: 1.5pt;
     }
-    .back-sec-title {
-        font-size: 5pt;
-        font-weight: bold;
-        color: #074e37;
-        border-bottom: 0.5pt solid #074e37;
-        padding-bottom: 0.5pt;
-        margin-bottom: 1.5pt;
-        letter-spacing: 0.2pt;
-    }
-    .back-info-item {
-        font-size: 4.4pt;
-        color: #1a2b23;
-        margin-bottom: 1pt;
-        line-height: 1.25;
-    }
-    .back-info-item strong {
-        color: #074e37;
-    }
-    .back-stamp-box {
-        width: 50pt;
-        height: 28pt;
-        border: 0.5pt dashed #c59b27;
+    .stamp-box {
+        width: 48pt;
+        height: 38pt;
+        border: 0.8pt dashed #c59b27;
         background-color: #fdfdf9;
         text-align: center;
-        padding-top: 3.5pt;
-        margin-left: auto;
+        margin: 0 auto;
+        padding-top: 5pt;
     }
-    .back-disclaimer {
-        background-color: #f2f7f4;
-        border: 0.4pt solid #c8d8d0;
+
+    /* Footers */
+    .ftr-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 0.5pt solid #c59b27;
         border-bottom: 2pt solid #074e37;
-        padding: 1.5pt 3pt;
-        text-align: center;
+    }
+    .disclaimer-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #f2f7f4;
+        border-top: 0.5pt solid #c8d8d0;
+        border-bottom: 2pt solid #074e37;
     }
 </style>
