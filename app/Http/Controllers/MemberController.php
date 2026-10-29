@@ -705,13 +705,16 @@ class MemberController extends Controller
 
     protected function memberIdentifier(Member $person): string
     {
+        $idParts = [];
+        if (!empty($person->membership_number)) {
+            $idParts[] = 'Mem #: ' . $person->membership_number;
+        }
         if ($person->cnic) {
-            return 'CNIC / شناختی کارڈ: ' . $person->cnic;
+            $idParts[] = 'CNIC: ' . $person->cnic;
+        } elseif ($person->b_form_number) {
+            $idParts[] = 'B-Form: ' . $person->b_form_number;
         }
-        if ($person->b_form_number) {
-            return 'B-Form / ب فارم: ' . $person->b_form_number;
-        }
-        return 'No CNIC/B-Form / کوئی شناختی کارڈ یا ب فارم نہیں';
+        return !empty($idParts) ? implode(' | ', $idParts) : 'ID: #' . $person->id;
     }
 
     protected function buildTreeData(Member $member, $visited = [], $relation = 'Member')

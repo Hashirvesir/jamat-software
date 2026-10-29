@@ -84,11 +84,11 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="membership_number" class="form-label d-flex justify-content-between align-items-center">
-                            <span>Membership Number</span>
-                            <span dir="rtl" class="text-secondary fw-semibold">ممبرشپ نمبر</span>
+                            <span>Membership Number <small class="text-muted fw-normal">(Auto-generated if blank)</small></span>
+                            <span dir="rtl" class="text-secondary fw-semibold">ممبرشپ نمبر <small class="text-muted fw-normal">(خالی چھوڑنے پر خودکار)</small></span>
                         </label>
                         <input type="text" name="membership_number" id="membership_number" class="form-control"
-                            value="{{ old('membership_number') }}" placeholder="e.g., 09-0030">
+                            value="{{ old('membership_number') }}" placeholder="Auto-generated e.g., SHJ-0048">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="father_name" class="form-label d-flex justify-content-between align-items-center">

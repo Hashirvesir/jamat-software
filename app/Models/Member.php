@@ -21,6 +21,29 @@ class Member extends Model
         'is_deceased' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($member) {
+            if (empty($member->getRawOriginal('membership_number'))) {
+                $member->membership_number = static::formatMembershipNumber($member->id);
+                $member->saveQuietly();
+            }
+        });
+    }
+
+    public static function formatMembershipNumber(?int $id): string
+    {
+        if (!$id) {
+            return 'SHJ-0001';
+        }
+        return 'SHJ-' . str_pad($id, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function getMembershipNumberAttribute($value)
+    {
+        return $value ?: static::formatMembershipNumber($this->id);
+    }
+
     public function community()
     {
         return $this->belongsTo(Community::class);

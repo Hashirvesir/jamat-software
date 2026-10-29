@@ -19,6 +19,7 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
+                            <th>Member #</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -35,6 +36,9 @@
                     <tbody>
                         @forelse($members as $member)
                             <tr>
+                                <td>
+                                    <span class="badge bg-dark font-monospace px-2 py-1">{{ $member->membership_number }}</span>
+                                </td>
                                 <td>
                                     <a href="{{ route('members.show', $member) }}" class="fw-bold text-primary text-decoration-none" title="Click to view details">
                                         {{ $member->name }}

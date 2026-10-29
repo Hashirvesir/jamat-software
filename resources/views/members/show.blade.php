@@ -61,6 +61,7 @@
                     @endif
                     <div class="mt-2">
                         <span class="badge bg-primary px-3 py-1">{{ $memberTypeLabels[$member->member_type] ?? ucfirst(str_replace('_', ' ', (string)$member->member_type)) }}</span>
+                        <span class="badge bg-dark font-monospace px-2 py-1">{{ $member->membership_number }}</span>
                         @if ($member->is_deceased)
                             <span class="badge bg-danger ms-1 px-2 py-1">Deceased / وفات شدہ</span>
                         @else
@@ -71,7 +72,7 @@
 
                 <div class="col-md-4">
                     <p class="mb-2"><strong>Name / نام:</strong> <span class="fs-6 fw-bold text-dark">{{ $member->name }}</span></p>
-                    <p class="mb-2"><strong>Membership Number / ممبرشپ نمبر:</strong> {{ $member->membership_number ?? 'N/A' }}</p>
+                    <p class="mb-2"><strong>Membership Number / ممبرشپ نمبر:</strong> <span class="badge bg-dark font-monospace fs-6 px-2 py-1">{{ $member->membership_number }}</span></p>
                     <p class="mb-2">
                         <strong>Father / والد:</strong>
                         @if ($father)
@@ -167,6 +168,7 @@
                         <table class="table table-bordered table-striped align-middle">
                             <thead class="table-light">
                                 <tr>
+                                    <th>Member #</th>
                                     <th>Name / نام</th>
                                     <th>CNIC / شناختی کارڈ</th>
                                     <th>Gender / جنس</th>
@@ -180,6 +182,7 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><span class="badge bg-dark font-monospace">{{ $member->spouse->membership_number }}</span></td>
                                     <td>
                                         <a href="{{ route('members.show', $member->spouse->id) }}" class="fw-bold text-primary text-decoration-underline">
                                             {{ $member->spouse->name }}
@@ -228,6 +231,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 40px;">#</th>
+                                <th>Member #</th>
                                 <th>Name / نام</th>
                                 <th>CNIC / B-Form / شناختی کارڈ / ب فارم</th>
                                 <th>Gender / جنس</th>
@@ -242,6 +246,7 @@
                             @forelse($familyChildren as $index => $child)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
+                                    <td><span class="badge bg-dark font-monospace">{{ $child->membership_number }}</span></td>
                                     <td>
                                         <a href="{{ route('members.show', $child->id) }}" class="fw-bold text-success text-decoration-underline">
                                             {{ $child->name }}
@@ -292,6 +297,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 40px;">#</th>
+                                    <th>Member #</th>
                                     <th>Name / نام</th>
                                     <th>CNIC / B-Form / شناختی کارڈ / ب فارم</th>
                                     <th>Gender / جنس</th>
@@ -304,6 +310,7 @@
                                 @foreach($siblings as $index => $sibling)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
+                                        <td><span class="badge bg-dark font-monospace">{{ $sibling->membership_number }}</span></td>
                                         <td>
                                             <a href="{{ route('members.show', $sibling->id) }}" class="fw-bold text-info text-decoration-underline">
                                                 {{ $sibling->name }}

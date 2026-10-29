@@ -80,6 +80,7 @@
                 <div class="col-md-10">
                     <div class="row">
                         <div class="col-sm-4 mb-2"><strong>Name / نام:</strong> {{ $member->name }}</div>
+                        <div class="col-sm-4 mb-2"><strong>Membership No / ممبرشپ نمبر:</strong> <span class="badge bg-dark font-monospace px-2 py-1">{{ $member->membership_number }}</span></div>
                         <div class="col-sm-4 mb-2">
                             <strong>{{ $member->cnic ? 'CNIC / شناختی کارڈ' : 'B-Form / ب فارم' }}:</strong>
                             {{ $member->cnic ?? $member->b_form_number ?? 'N/A' }}
