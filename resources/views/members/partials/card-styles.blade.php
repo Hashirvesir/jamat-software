@@ -21,10 +21,6 @@
     table {
         border-collapse: collapse;
     }
-    .card-outer {
-        width: 100%;
-        border-collapse: collapse;
-    }
 
     /* Header */
     .hdr-tbl {
@@ -34,31 +30,32 @@
         border-bottom: 1.5pt solid #c59b27;
     }
     .hdr-logo {
-        width: 22pt;
-        padding: 2.5pt 2pt 2.5pt 4pt;
+        width: 25pt;
+        padding: 3pt 2pt 3pt 5pt;
         vertical-align: middle;
+        text-align: center;
     }
     .hdr-title-box {
-        padding: 2.5pt 2pt;
+        padding: 3pt 2pt;
         vertical-align: middle;
     }
     .hdr-title-main {
         color: #ffffff;
-        font-size: 7.8pt;
+        font-size: 8.2pt;
         font-weight: bold;
         letter-spacing: 0.4pt;
         line-height: 1;
     }
     .hdr-title-sub {
         color: #ecd48f;
-        font-size: 4.2pt;
+        font-size: 4.5pt;
         letter-spacing: 0.3pt;
-        margin-top: 1.2pt;
+        margin-top: 1.5pt;
         line-height: 1;
     }
     .hdr-badge-box {
         width: 72pt;
-        padding: 2.5pt 4pt 2.5pt 2pt;
+        padding: 3pt 5pt 3pt 2pt;
         text-align: right;
         vertical-align: middle;
     }
@@ -66,9 +63,9 @@
         background-color: #053727;
         border: 0.6pt solid #c59b27;
         color: #ffffff;
-        font-size: 5.2pt;
+        font-size: 5.5pt;
         font-weight: bold;
-        padding: 1.5pt 3.5pt;
+        padding: 2pt 4.5pt;
         text-align: center;
         white-space: nowrap;
     }
@@ -80,91 +77,87 @@
     }
     .kv-lbl {
         width: 44pt;
-        font-size: 5pt;
+        font-size: 5.2pt;
         font-weight: bold;
         color: #586c63;
         text-transform: uppercase;
-        padding: 2.2pt 0;
+        padding: 4.5pt 0;
         vertical-align: middle;
     }
     .kv-val {
-        font-size: 6.5pt;
+        font-size: 6.8pt;
         font-weight: bold;
         color: #1e293b;
-        padding: 2.2pt 0;
+        padding: 4.5pt 0;
         vertical-align: middle;
         border-bottom: 0.3pt solid #e6ece8;
     }
     .kv-val-name {
-        font-size: 7.8pt;
+        font-size: 8.2pt;
         font-weight: bold;
         color: #074e37;
-        padding: 2pt 0;
+        padding: 4pt 0;
         vertical-align: middle;
-        border-bottom: 0.4pt solid #c59b27;
+        border-bottom: 0.5pt solid #c59b27;
     }
 
     /* Key-Value Back Grid */
     .kv-lbl-back {
-        width: 56pt;
-        font-size: 4.8pt;
+        width: 58pt;
+        font-size: 5pt;
         font-weight: bold;
         color: #586c63;
         text-transform: uppercase;
-        padding: 2pt 0;
+        padding: 4.2pt 0;
         vertical-align: middle;
     }
     .kv-val-back {
-        font-size: 5.8pt;
+        font-size: 6.2pt;
         font-weight: bold;
         color: #1e293b;
-        padding: 2pt 0;
+        padding: 4.2pt 0;
         vertical-align: middle;
         border-bottom: 0.3pt solid #e6ece8;
     }
 
     /* Photo & Stamp */
-    .photo-box {
-        width: 44pt;
-        height: 50pt;
-        border: 0.8pt solid #074e37;
-        background-color: #f2f6f4;
-        margin: 0 auto;
-        text-align: center;
-        overflow: hidden;
-    }
     .type-badge {
         background-color: #074e37;
         border: 0.5pt solid #c59b27;
         color: #ffffff;
-        font-size: 4.2pt;
+        font-size: 4.5pt;
         font-weight: bold;
         text-align: center;
-        padding: 1.5pt 1pt;
-        margin-top: 2pt;
+        padding: 2.2pt 1pt;
+        margin-top: 2.5pt;
         line-height: 1.2;
         border-radius: 1.5pt;
     }
     .stamp-box {
-        width: 48pt;
-        height: 38pt;
+        width: 52pt;
+        height: 52pt;
         border: 0.8pt dashed #c59b27;
         background-color: #fdfdf9;
         text-align: center;
         margin: 0 auto;
-        padding-top: 5pt;
+        padding-top: 7pt;
     }
 
-    /* Footers */
-    .ftr-tbl {
+    /* Pinned Footers at exact bottom edge of physical card */
+    .ftr-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
         width: 100%;
-        border-collapse: collapse;
+        background-color: #ffffff;
         border-top: 0.5pt solid #c59b27;
         border-bottom: 2pt solid #074e37;
     }
-    .disclaimer-tbl {
+    .disclaimer-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
         width: 100%;
-        border-collapse: collapse;
         background-color: #f2f7f4;
         border-top: 0.5pt solid #c8d8d0;
         border-bottom: 2pt solid #074e37;

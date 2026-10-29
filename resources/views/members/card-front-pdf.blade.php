@@ -32,111 +32,107 @@
     $cnicDisplayName = $member->cnic ?: ($member->b_form_number ?: 'N/A');
 @endphp
 
-<table class="card-outer">
-    <!-- HEADER -->
+<!-- HEADER -->
+<table class="hdr-tbl">
     <tr>
-        <td style="padding: 0;">
-            <table class="hdr-tbl">
-                <tr>
-                    <td class="hdr-logo">
-                        @if(file_exists($logoPath))
-                            <img src="{{ $logoPath }}" style="width: 15pt; height: 15pt;" alt="">
-                        @endif
-                    </td>
-                    <td class="hdr-title-box">
-                        <div class="hdr-title-main">SINDHI HALAI JAMAT</div>
-                        <div class="hdr-title-sub">MEMBERSHIP CARD &bull; <span class="urdu">سندھی ہالائی جماعت</span></div>
-                    </td>
-                    <td class="hdr-badge-box">
-                        <div class="hdr-badge">{{ $membershipNumber }}</div>
-                    </td>
-                </tr>
-            </table>
+        <td class="hdr-logo">
+            @if(file_exists($logoPath))
+                <img src="{{ $logoPath }}" style="width: 17pt; height: 17pt; vertical-align: middle;" alt="">
+            @endif
         </td>
-    </tr>
-
-    <!-- BODY -->
-    <tr>
-        <td style="padding: 3pt 4pt 2pt 4pt; vertical-align: top;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <!-- LEFT COLUMN: MEMBER DETAILS TABLE -->
-                    <td style="width: 172pt; padding-right: 4pt; vertical-align: top;">
-                        <table class="kv-tbl">
-                            <tr>
-                                <td class="kv-lbl">Name</td>
-                                <td class="kv-val-name">{{ strtoupper(mb_substr($member->name, 0, 26)) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="kv-lbl">Father</td>
-                                <td class="kv-val">{{ strtoupper(mb_substr($fatherDisplayName, 0, 28)) }}</td>
-                            </tr>
-                            <tr>
-                                <td class="kv-lbl">G.Father / Caste</td>
-                                <td class="kv-val">
-                                    {{ strtoupper(mb_substr($grandfatherDisplayName, 0, 16)) }}
-                                    &bull;
-                                    <span style="color: #586c63; font-size: 4.8pt;">CASTE:</span>
-                                    {{ strtoupper(mb_substr($casteDisplayName, 0, 14)) }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="kv-lbl">{{ $member->cnic ? 'CNIC' : 'B-Form' }}</td>
-                                <td class="kv-val" style="color: #074e37; letter-spacing: 0.3pt;">{{ $cnicDisplayName }}</td>
-                            </tr>
-                            <tr>
-                                <td class="kv-lbl" style="border-bottom: none;">Community</td>
-                                <td class="kv-val" style="border-bottom: none;">
-                                    {{ mb_substr($member->community?->name ?? 'General Community', 0, 22) }}
-                                    @if($member->blood_group)
-                                        &nbsp;&nbsp;<span style="background-color: #b30000; color: #ffffff; font-size: 4.8pt; font-weight: bold; padding: 0.8pt 2.5pt; border-radius: 1pt;">{{ $member->blood_group }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-
-                    <!-- RIGHT COLUMN: PHOTO & BADGE -->
-                    <td style="width: 52pt; text-align: center; vertical-align: top;">
-                        <div class="photo-box">
-                            @if($photoPath)
-                                <img src="{{ $photoPath }}" style="width: 44pt; height: 50pt;" alt="{{ $member->name }}">
-                            @else
-                                <div style="padding-top: 15pt; font-size: 5pt; color: #7a8f84;">PHOTO</div>
-                            @endif
-                        </div>
-
-                        <div class="type-badge">
-                            {{ strtoupper(str_replace('_', ' ', $member->member_type)) }}<br>
-                            <span class="urdu" style="font-size: 3.8pt; color: #f0f7f3;">{{ $typeUrdu }}</span>
-                        </div>
-
-                        <div style="font-size: 3.2pt; color: #6b7e74; text-align: center; margin-top: 1.5pt;">
-                            Reg. No. 3811
-                        </div>
-                    </td>
-                </tr>
-            </table>
+        <td class="hdr-title-box">
+            <div class="hdr-title-main">SINDHI HALAI JAMAT</div>
+            <div class="hdr-title-sub">MEMBERSHIP CARD &bull; <span class="urdu">سندھی ہالائی جماعت</span></div>
         </td>
-    </tr>
-
-    <!-- FOOTER -->
-    <tr>
-        <td style="padding: 1.5pt 4pt 2pt 4pt; vertical-align: bottom;">
-            <table class="ftr-tbl">
-                <tr>
-                    <td style="vertical-align: middle; padding: 2pt 0;">
-                        <span style="font-size: 3.8pt; color: #074e37; font-weight: bold;">Govt. Reg. Act XXI 1860 &bull; Sindhi Halai Jamat</span>
-                    </td>
-                    <td style="text-align: right; vertical-align: middle; padding: 2pt 0;">
-                        <div style="width: 60pt; border-bottom: 0.4pt solid #c59b27; margin-left: auto; margin-bottom: 1pt;">&nbsp;</div>
-                        <div style="font-size: 3.4pt; color: #074e37; font-weight: bold;">Authorized Signatory</div>
-                    </td>
-                </tr>
-            </table>
+        <td class="hdr-badge-box">
+            <div class="hdr-badge">{{ $membershipNumber }}</div>
         </td>
     </tr>
 </table>
+
+<!-- BODY -->
+<div style="padding: 4.5pt 5pt 0 5pt;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <!-- LEFT COLUMN: MEMBER DETAILS TABLE -->
+            <td style="width: 170pt; padding-right: 5pt; vertical-align: top;">
+                <table class="kv-tbl">
+                    <tr>
+                        <td class="kv-lbl">Name</td>
+                        <td class="kv-val-name">{{ strtoupper(mb_substr($member->name, 0, 26)) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-lbl">Father</td>
+                        <td class="kv-val">{{ strtoupper(mb_substr($fatherDisplayName, 0, 28)) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-lbl">G.Father / Caste</td>
+                        <td class="kv-val">
+                            {{ strtoupper(mb_substr($grandfatherDisplayName, 0, 16)) }}
+                            &bull;
+                            <span style="color: #586c63; font-size: 5pt;">CASTE:</span>
+                            {{ strtoupper(mb_substr($casteDisplayName, 0, 14)) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kv-lbl">{{ $member->cnic ? 'CNIC' : 'B-Form' }}</td>
+                        <td class="kv-val" style="color: #074e37; letter-spacing: 0.3pt;">{{ $cnicDisplayName }}</td>
+                    </tr>
+                    <tr>
+                        <td class="kv-lbl" style="border-bottom: none;">Community</td>
+                        <td class="kv-val" style="border-bottom: none;">
+                            {{ mb_substr($member->community?->name ?? 'General Community', 0, 22) }}
+                            @if($member->blood_group)
+                                &nbsp;&nbsp;<span style="background-color: #b30000; color: #ffffff; font-size: 5pt; font-weight: bold; padding: 1pt 3pt; border-radius: 1pt;">{{ $member->blood_group }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- RIGHT COLUMN: PHOTO & BADGE -->
+            <td style="width: 58pt; vertical-align: top; text-align: center;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center; vertical-align: middle;">
+                            @if($photoPath)
+                                <img src="{{ $photoPath }}" style="width: 48pt; height: 56pt; border: 0.8pt solid #074e37; border-radius: 2pt;" alt="{{ $member->name }}">
+                            @else
+                                <div style="width: 48pt; height: 56pt; border: 0.8pt solid #074e37; background-color: #f2f6f4; line-height: 56pt; text-align: center; font-size: 5pt; color: #7a8f84; margin: 0 auto;">PHOTO</div>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; padding-top: 2pt;">
+                            <div class="type-badge">
+                                {{ strtoupper(str_replace('_', ' ', $member->member_type)) }}<br>
+                                <span class="urdu" style="font-size: 4pt; color: #f0f7f3;">{{ $typeUrdu }}</span>
+                            </div>
+                            <div style="font-size: 3.4pt; color: #6b7e74; margin-top: 2pt;">
+                                Reg. No. 3811
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- FOOTER PINNED AT VERY BOTTOM -->
+<div class="ftr-container">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 2.5pt 5pt; vertical-align: middle;">
+                <span style="font-size: 4.2pt; color: #074e37; font-weight: bold;">Govt. Reg. Act XXI 1860 &bull; Sindhi Halai Jamat</span>
+            </td>
+            <td style="padding: 2.5pt 5pt; text-align: right; vertical-align: middle;">
+                <div style="width: 65pt; border-bottom: 0.4pt solid #c59b27; margin-left: auto; margin-bottom: 1pt;">&nbsp;</div>
+                <div style="font-size: 3.6pt; color: #074e37; font-weight: bold;">Authorized Signatory</div>
+            </td>
+        </tr>
+    </table>
+</div>
 
 </body>
 </html>
