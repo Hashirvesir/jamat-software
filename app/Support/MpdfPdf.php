@@ -86,7 +86,7 @@ class MpdfPdf
         // Faint logo watermark centred on every page
         $logoPath = public_path('logo.jpeg');
         if (file_exists($logoPath)) {
-            $instance->mpdf->SetWatermarkImage($logoPath, 0.07, [28, 28], [29, 15]);
+            $instance->mpdf->SetWatermarkImage($logoPath, 0.05, [26, 26], 'P');
             $instance->mpdf->showWatermarkImage = true;
         }
 
