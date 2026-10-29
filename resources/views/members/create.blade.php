@@ -38,6 +38,7 @@
         <div class="card-body">
             <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data" id="memberForm">
                 @csrf
+                <input type="hidden" name="form_token" id="formToken" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="profile_picture" class="form-label d-flex justify-content-between align-items-center">
@@ -782,15 +783,32 @@
                     });
             }
 
-            // Capture Photo
+            // Capture Photo (Optimized lightweight JPEG)
             $('#capture').on('click', function() {
                 const video = document.getElementById('video');
                 const canvas = document.getElementById('canvas');
                 const context = canvas.getContext('2d');
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const dataUrl = canvas.toDataURL('image/png');
+                
+                const maxWidth = 640;
+                const maxHeight = 480;
+                let width = video.videoWidth || 640;
+                let height = video.videoHeight || 480;
+                
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                if (height > maxHeight) {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(video, 0, 0, width, height);
+                
+                // JPEG at 0.82 quality reduces payload size from ~4MB PNG to ~45KB
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
                 $('#capturedImage').val(dataUrl);
                 $('#imagePreview').html('<img src="' + dataUrl +
                     '" alt="Preview" class="img-thumbnail" style="max-width: 120px; max-height: 120px;">');
@@ -802,16 +820,44 @@
             });
 
             // Double submission prevention & robust form submission
-            let formSubmitted = false;
+            let isSubmitting = false;
             $('#memberForm').on('submit', function(e) {
-                if (formSubmitted) {
+                if (isSubmitting) {
                     e.preventDefault();
                     return false;
                 }
-                formSubmitted = true;
-                $('#submitBtn')
-                    .prop('disabled', true)
-                    .html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving Member... / ممبر محفوظ ہو رہا ہے...');
+
+                const memberName = $.trim($('#name').val());
+                if (!memberName) {
+                    e.preventDefault();
+                    alert('Please enter member name / براہ کرم ممبر کا نام درج کریں');
+                    $('#name').focus();
+                    return false;
+                }
+
+                isSubmitting = true;
+                const $btn = $('#submitBtn');
+
+                // Defer button disable so browser dispatches the submit POST event smoothly
+                setTimeout(function() {
+                    $btn.addClass('disabled').css({ 'pointer-events': 'none', 'opacity': '0.75' });
+                    $btn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving Member... / ممبر محفوظ ہو رہا ہے...');
+                }, 10);
+
+                // Safety timeout: re-enable after 25 seconds in case of slow connection/offline
+                setTimeout(function() {
+                    isSubmitting = false;
+                    $btn.removeClass('disabled').css({ 'pointer-events': 'auto', 'opacity': '1' });
+                    $btn.html('Save Member / ممبر محفوظ کریں');
+                }, 25000);
+            });
+
+            // Re-enable button on back/forward browser navigation
+            window.addEventListener('pageshow', function() {
+                isSubmitting = false;
+                const $btn = $('#submitBtn');
+                $btn.removeClass('disabled').css({ 'pointer-events': 'auto', 'opacity': '1' });
+                $btn.html('Save Member / ممبر محفوظ کریں');
             });
         });
     </script>

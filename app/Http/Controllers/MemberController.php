@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Support\MpdfPdf;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
@@ -50,11 +52,28 @@ class MemberController extends Controller
 
     public function store(Request $request)
     {
+        // 0. Double-submit prevention via atomic Form Token
+        $formToken = $request->input('form_token');
+        if (!empty($formToken)) {
+            $tokenKey = 'member_store_token_' . md5($formToken);
+            if (!Cache::add($tokenKey, 1, 60)) {
+                Log::warning('Duplicate member submission blocked via form_token: ' . $formToken);
+                return redirect()->route('members.index')->with('success', 'Member pehle hi save ho chuka hai (Duplicate request prevented).');
+            }
+        }
+
         $data = $request->all();
 
-        // 1. Truncate string inputs and convert empty strings to null
+        // 1. Validate Member Name
+        $rawName = isset($data['name']) ? trim((string) $data['name']) : '';
+        if ($rawName === '') {
+            return redirect()->back()->withInput()->with('error', 'Member ka naam likhna zaroori hai (Member name is required).');
+        }
+        $data['name'] = mb_substr($rawName, 0, 250);
+
+        // 2. Truncate string inputs and convert empty strings to null
         $stringFields = [
-            'name', 'father_name', 'grandfather_name', 'caste', 'email', 'phone',
+            'father_name', 'grandfather_name', 'caste', 'email', 'phone',
             'cnic', 'membership_number', 'blood_group', 'b_form_number', 'country',
             'education', 'skill', 'address', 'description'
         ];
@@ -66,10 +85,7 @@ class MemberController extends Controller
             }
         }
 
-        // 2. Validate and normalize Enums
-        if (empty($data['name'])) {
-            $data['name'] = 'N/A';
-        }
+        // 3. Validate and normalize Enums
         if (empty($data['gender']) || !in_array($data['gender'], ['male', 'female', 'other'])) {
             $data['gender'] = 'male';
         }
@@ -83,13 +99,13 @@ class MemberController extends Controller
             $data['status'] = 'active';
         }
 
-        // 3. Normalize Date & Numeric fields
+        // 4. Normalize Date & Numeric fields
         $data['is_deceased'] = !empty($data['is_deceased']) ? 1 : 0;
         $data['date_of_birth'] = $this->sanitizeDate($data['date_of_birth'] ?? null);
         $data['death_date'] = $data['is_deceased'] ? $this->sanitizeDate($data['death_date'] ?? null) : null;
         $data['card_received'] = (!empty($data['card_received']) && is_numeric($data['card_received'])) ? (int) $data['card_received'] : null;
 
-        // 4. Safe Foreign Keys (Community, Parent, Spouse)
+        // 5. Safe Foreign Keys (Community, Parent, Spouse)
         if (!empty($data['community_id'])) {
             $commExists = Community::where('id', $data['community_id'])->exists();
             if (!$commExists) {
@@ -115,7 +131,22 @@ class MemberController extends Controller
             $data['spouse_id'] = null;
         }
 
-        // 5. Handle Profile Picture (File upload or Base64 Webcam capture)
+        // 6. Fast Duplicate Detection (prevent creating identical member within 15 seconds)
+        $recentDuplicateQuery = Member::where('name', $data['name'])
+            ->where('community_id', $data['community_id'])
+            ->where('created_at', '>=', now()->subSeconds(15));
+        if (!empty($data['cnic'])) {
+            $recentDuplicateQuery->where('cnic', $data['cnic']);
+        } elseif (!empty($data['phone'])) {
+            $recentDuplicateQuery->where('phone', $data['phone']);
+        }
+        $existingDuplicate = $recentDuplicateQuery->first();
+        if ($existingDuplicate) {
+            Log::info("Rapid duplicate submission blocked for: {$data['name']} (Existing ID: {$existingDuplicate->id})");
+            return redirect()->route('members.index')->with('success', 'Member kamiyabi se add ho gaya hai.');
+        }
+
+        // 7. Handle Profile Picture (File upload or Base64 Webcam capture)
         if (!file_exists(public_path('profiles'))) {
             @mkdir(public_path('profiles'), 0777, true);
         }
@@ -139,10 +170,10 @@ class MemberController extends Controller
                 $parts = explode(';base64,', $captured);
                 if (count($parts) === 2) {
                     $extParts = explode('image/', $parts[0]);
-                    $ext = $extParts[1] ?? 'png';
+                    $ext = $extParts[1] ?? 'jpeg';
                     $ext = explode('+', $ext)[0];
                     if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $ext = 'png';
+                        $ext = 'jpeg';
                     }
                     $filename = uniqid('cam_') . '.' . $ext;
                     file_put_contents(public_path('profiles/' . $filename), base64_decode($parts[1]));
@@ -153,7 +184,7 @@ class MemberController extends Controller
             }
         }
 
-        // 6. Separate Spouse and Children input data
+        // 8. Separate Spouse and Children input data
         $spouseType = $request->input('spouse_type', 'new');
         $spouseName = trim((string) $request->input('spouse_name', ''));
         $spouseCnic = trim((string) $request->input('spouse_cnic', '')) ?: null;
@@ -173,6 +204,7 @@ class MemberController extends Controller
 
         // Clean extra non-column keys from main member payload
         unset(
+            $data['form_token'],
             $data['spouse_type'],
             $data['spouse_name'],
             $data['spouse_cnic'],
@@ -189,32 +221,41 @@ class MemberController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $data, $spouseType, $spouseName, $spouseCnic, $spousePhone, $spouseGender, $spouseDob, $spouseBloodGroup, $existingSpouseId, $childrenData) {
+            DB::transaction(function () use ($data, $spouseType, $spouseName, $spouseCnic, $spousePhone, $spouseGender, $spouseDob, $spouseBloodGroup, $existingSpouseId, $childrenData) {
                 if (!empty($spouseName) || !empty($existingSpouseId)) {
                     $data['marital_status'] = 'married';
                 }
 
                 $member = Member::create($data);
 
-                // Handle Spouse
-                if ($member->marital_status === 'married' || !empty($spouseName) || !empty($existingSpouseId)) {
+                // Handle Spouse (Only when married)
+                if ($member->marital_status === 'married') {
                     if ($spouseType === 'new' && !empty($spouseName)) {
-                        $spouse = Member::create([
-                            'name' => mb_substr($spouseName, 0, 250),
-                            'gender' => $spouseGender,
-                            'cnic' => $spouseCnic ? mb_substr($spouseCnic, 0, 50) : null,
-                            'phone' => $spousePhone ? mb_substr($spousePhone, 0, 50) : null,
-                            'date_of_birth' => $spouseDob,
-                            'blood_group' => $spouseBloodGroup ? mb_substr($spouseBloodGroup, 0, 10) : null,
-                            'marital_status' => 'married',
-                            'spouse_id' => $member->id,
-                            'community_id' => $member->community_id,
-                            'member_type' => 'non_householder',
-                            'address' => $member->address,
-                            'country' => $member->country,
-                            'caste' => $member->caste,
-                            'status' => 'active',
-                        ]);
+                        // Check if spouse already exists by CNIC to prevent duplicate spouse records
+                        $existingSpouseByCnic = $spouseCnic ? Member::where('cnic', $spouseCnic)->first() : null;
+                        if ($existingSpouseByCnic) {
+                            $spouse = $existingSpouseByCnic;
+                            $spouse->spouse_id = $member->id;
+                            $spouse->marital_status = 'married';
+                            $spouse->save();
+                        } else {
+                            $spouse = Member::create([
+                                'name' => mb_substr($spouseName, 0, 250),
+                                'gender' => $spouseGender,
+                                'cnic' => $spouseCnic ? mb_substr($spouseCnic, 0, 50) : null,
+                                'phone' => $spousePhone ? mb_substr($spousePhone, 0, 50) : null,
+                                'date_of_birth' => $spouseDob,
+                                'blood_group' => $spouseBloodGroup ? mb_substr($spouseBloodGroup, 0, 10) : null,
+                                'marital_status' => 'married',
+                                'spouse_id' => $member->id,
+                                'community_id' => $member->community_id,
+                                'member_type' => 'non_householder',
+                                'address' => $member->address,
+                                'country' => $member->country,
+                                'caste' => $member->caste,
+                                'status' => 'active',
+                            ]);
+                        }
 
                         $member->spouse_id = $spouse->id;
                         $member->marital_status = 'married';
@@ -242,12 +283,14 @@ class MemberController extends Controller
                     }
                 }
 
-                // Handle Children
+                // Handle Children (with in-memory & database deduplication)
                 $createdChildrenCount = 0;
-                if (is_array($childrenData)) {
+                if (is_array($childrenData) && !empty($childrenData)) {
                     $fatherId = $member->gender === 'male' ? $member->id : ($member->spouse_id ?: $member->id);
                     $fatherName = $member->gender === 'male' ? $member->name : ($spouseName ?: ($member->father_name ?? null));
                     $grandfatherName = $member->gender === 'male' ? $member->father_name : ($member->grandfather_name ?? null);
+
+                    $seenChildren = [];
 
                     foreach ($childrenData as $childItem) {
                         if (!is_array($childItem)) {
@@ -258,12 +301,30 @@ class MemberController extends Controller
                             continue;
                         }
 
+                        $childDob = $this->sanitizeDate($childItem['date_of_birth'] ?? null);
+                        $childBform = !empty($childItem['b_form_number']) ? mb_substr(trim((string) $childItem['b_form_number']), 0, 50) : null;
+
+                        // In-memory deduplication key to stop duplicate rows in same submit
+                        $dedupKey = mb_strtolower($childName) . '|' . ($childBform ?? '') . '|' . ($childDob ?? '');
+                        if (isset($seenChildren[$dedupKey])) {
+                            continue;
+                        }
+                        $seenChildren[$dedupKey] = true;
+
+                        // Check if child already exists under this father
+                        $childExists = Member::where('parent_id', $fatherId)
+                            ->where('name', $childName)
+                            ->when(!empty($childBform), fn($q) => $q->where('b_form_number', $childBform))
+                            ->exists();
+
+                        if ($childExists) {
+                            continue;
+                        }
+
                         $childGender = $childItem['gender'] ?? 'male';
                         if (!in_array($childGender, ['male', 'female', 'other'])) {
                             $childGender = 'male';
                         }
-                        $childDob = $this->sanitizeDate($childItem['date_of_birth'] ?? null);
-                        $childBform = !empty($childItem['b_form_number']) ? mb_substr(trim((string) $childItem['b_form_number']), 0, 50) : null;
                         $childBloodGroup = !empty($childItem['blood_group']) ? mb_substr(trim((string) $childItem['blood_group']), 0, 10) : null;
 
                         Member::create([
@@ -305,7 +366,7 @@ class MemberController extends Controller
 
             return redirect()->route('members.index')->with('success', 'Member kamiyabi se add ho gaya hai (Member added successfully).');
         } catch (\Throwable $e) {
-            \Log::error('Member store error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            Log::error('Member store error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return redirect()->back()->withInput()->with('error', 'Member save nahi ho saka: ' . $e->getMessage());
         }
     }
