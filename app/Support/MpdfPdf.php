@@ -15,6 +15,10 @@ class MpdfPdf
 
     public function __construct(array $config = [])
     {
+        if (!class_exists(\Mpdf\Mpdf::class) || !class_exists(\Mpdf\Config\ConfigVariables::class)) {
+            abort(500, 'mPDF package server par install nahi hai. Meharbani farma kar live server terminal par "composer install --no-dev" run karein taake mPDF vendor folder mein download ho jaye.');
+        }
+
         $defaultConfig = (new ConfigVariables())->getDefaults();
         $fontDirs = $defaultConfig['fontDir'];
 
