@@ -801,46 +801,50 @@ class MemberController extends Controller
             }
         }
 
-        $siblings = $member->siblings;
-        foreach ($siblings as $sibling) {
-            if (!in_array('sibling_' . $sibling->id, $addedNodes)) {
-                $siblingType = ucfirst(str_replace('_', ' ', $sibling->member_type)) . ' / ' . $this->memberTypeUrdu($sibling->member_type);
-                $node['children'][] = [
-                    'id' => 'sibling_' . $sibling->id . '_' . $member->id,
-                    'text' => 'Sibling / بہن بھائی: ' . $sibling->name . ' (' . $siblingType . ') — ' . $this->memberIdentifier($sibling),
-                    'type' => 'sibling',
-                    'relation' => 'Sibling',
-                    'icon' => 'jstree-file',
-                    'name' => $sibling->name,
-                    'cnic' => $sibling->cnic,
-                    'b_form_number' => $sibling->b_form_number,
-                ];
-                $addedNodes[] = 'sibling_' . $sibling->id;
-            }
-        }
-
-        if ($member->parent && !($member->member_type === 'child' && $member->spouse_id) && !in_array('parent_' . $member->parent->id, $addedNodes)) {
-            $isParentTopLevel = false;
-            foreach ($visited as $visitedId) {
-                if ($visitedId == $member->parent->id && $visitedId != $member->id) {
-                    $isParentTopLevel = true;
-                    break;
+        // Siblings aur Parents sirf ROOT member ke liye load hon.
+        // Child nodes ke andar unke siblings dobara load nahi hone chahiye kyunke wo already parent level par ek sath show ho rahe hain.
+        if ($relation === 'Member') {
+            $siblings = $member->siblings;
+            foreach ($siblings as $sibling) {
+                if (!in_array('sibling_' . $sibling->id, $addedNodes)) {
+                    $siblingType = ucfirst(str_replace('_', ' ', $sibling->member_type)) . ' / ' . $this->memberTypeUrdu($sibling->member_type);
+                    $node['children'][] = [
+                        'id' => 'sibling_' . $sibling->id . '_' . $member->id,
+                        'text' => 'Sibling / بہن بھائی: ' . $sibling->name . ' (' . $siblingType . ') — ' . $this->memberIdentifier($sibling),
+                        'type' => 'sibling',
+                        'relation' => 'Sibling',
+                        'icon' => 'jstree-file',
+                        'name' => $sibling->name,
+                        'cnic' => $sibling->cnic,
+                        'b_form_number' => $sibling->b_form_number,
+                    ];
+                    $addedNodes[] = 'sibling_' . $sibling->id;
                 }
             }
-            if (!$isParentTopLevel) {
-                $parent = $member->parent;
-                $parentType = ucfirst(str_replace('_', ' ', $parent->member_type)) . ' / ' . $this->memberTypeUrdu($parent->member_type);
-                $node['children'][] = [
-                    'id' => 'parent_' . $parent->id . '_' . $member->id,
-                    'text' => 'Parent / والدین: ' . $parent->name . ' (' . $parentType . ') — ' . $this->memberIdentifier($parent),
-                    'type' => 'parent',
-                    'relation' => 'Parent',
-                    'icon' => 'jstree-file',
-                    'name' => $parent->name,
-                    'cnic' => $parent->cnic,
-                    'b_form_number' => $parent->b_form_number,
-                ];
-                $addedNodes[] = 'parent_' . $parent->id;
+
+            if ($member->parent && !($member->member_type === 'child' && $member->spouse_id) && !in_array('parent_' . $member->parent->id, $addedNodes)) {
+                $isParentTopLevel = false;
+                foreach ($visited as $visitedId) {
+                    if ($visitedId == $member->parent->id && $visitedId != $member->id) {
+                        $isParentTopLevel = true;
+                        break;
+                    }
+                }
+                if (!$isParentTopLevel) {
+                    $parent = $member->parent;
+                    $parentType = ucfirst(str_replace('_', ' ', $parent->member_type)) . ' / ' . $this->memberTypeUrdu($parent->member_type);
+                    $node['children'][] = [
+                        'id' => 'parent_' . $parent->id . '_' . $member->id,
+                        'text' => 'Parent / والدین: ' . $parent->name . ' (' . $parentType . ') — ' . $this->memberIdentifier($parent),
+                        'type' => 'parent',
+                        'relation' => 'Parent',
+                        'icon' => 'jstree-file',
+                        'name' => $parent->name,
+                        'cnic' => $parent->cnic,
+                        'b_form_number' => $parent->b_form_number,
+                    ];
+                    $addedNodes[] = 'parent_' . $parent->id;
+                }
             }
         }
 
