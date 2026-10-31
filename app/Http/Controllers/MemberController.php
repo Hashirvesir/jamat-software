@@ -222,21 +222,29 @@ class MemberController extends Controller
 
         try {
             DB::transaction(function () use ($data, $spouseType, $spouseName, $spouseCnic, $spousePhone, $spouseGender, $spouseDob, $spouseBloodGroup, $existingSpouseId, $childrenData) {
-                if (!empty($spouseName) || !empty($existingSpouseId)) {
+                $isWidowedOrWidower = in_array($data['marital_status'] ?? '', ['widowed', 'widower']);
+
+                // Only set marital_status to married if not widowed/widower and spouse details provided
+                if ((!empty($spouseName) || !empty($existingSpouseId)) && !$isWidowedOrWidower) {
                     $data['marital_status'] = 'married';
                 }
 
                 $member = Member::create($data);
 
-                // Handle Spouse (Only when married)
-                if ($member->marital_status === 'married') {
+                // Handle Spouse (When married, or optionally when widowed/widower)
+                if (in_array($member->marital_status, ['married', 'widowed', 'widower'])) {
                     if ($spouseType === 'new' && !empty($spouseName)) {
                         // Check if spouse already exists by CNIC to prevent duplicate spouse records
                         $existingSpouseByCnic = $spouseCnic ? Member::where('cnic', $spouseCnic)->first() : null;
                         if ($existingSpouseByCnic) {
                             $spouse = $existingSpouseByCnic;
                             $spouse->spouse_id = $member->id;
-                            $spouse->marital_status = 'married';
+                            if ($isWidowedOrWidower) {
+                                $spouse->is_deceased = 1;
+                                $spouse->status = 'inactive';
+                            } else {
+                                $spouse->marital_status = 'married';
+                            }
                             $spouse->save();
                         } else {
                             $spouse = Member::create([
@@ -253,22 +261,26 @@ class MemberController extends Controller
                                 'address' => $member->address,
                                 'country' => $member->country,
                                 'caste' => $member->caste,
-                                'status' => 'active',
+                                'status' => $isWidowedOrWidower ? 'inactive' : 'active',
+                                'is_deceased' => $isWidowedOrWidower ? 1 : 0,
                             ]);
                         }
 
                         $member->spouse_id = $spouse->id;
-                        $member->marital_status = 'married';
                         $member->save();
                     } elseif ($spouseType === 'existing' && !empty($existingSpouseId)) {
                         $existingSpouse = Member::find($existingSpouseId);
                         if ($existingSpouse) {
                             $member->spouse_id = $existingSpouse->id;
-                            $member->marital_status = 'married';
                             $member->save();
 
                             $existingSpouse->spouse_id = $member->id;
-                            $existingSpouse->marital_status = 'married';
+                            if ($isWidowedOrWidower) {
+                                $existingSpouse->is_deceased = 1;
+                                $existingSpouse->status = 'inactive';
+                            } else {
+                                $existingSpouse->marital_status = 'married';
+                            }
                             $existingSpouse->save();
                         }
                     }

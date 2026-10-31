@@ -206,13 +206,33 @@
                     </div>
                 </div>
 
-                <!-- Spouse Section (Shown when Married) -->
-                <div class="card mb-4 border-primary shadow-sm" id="spouseSection" style="display: {{ old('marital_status') == 'married' ? 'block' : 'none' }};">
+                <!-- Spouse Section (Shown when Married, Widowed, or Widower) -->
+                <div class="card mb-4 border-primary shadow-sm" id="spouseSection" style="display: {{ in_array(old('marital_status'), ['married', 'widowed', 'widower']) ? 'block' : 'none' }};">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
-                        <h6 class="mb-0 fw-bold">Spouse Details</h6>
-                        <span dir="rtl" class="fw-semibold">شریکِ حیات کی تفصیلات</span>
+                        <h6 class="mb-0 fw-bold" id="spouseSectionTitle">
+                            @if(old('marital_status') === 'widowed')
+                                Late Husband Details <span class="badge bg-light text-dark ms-1">Optional / اختیاری</span>
+                            @elseif(old('marital_status') === 'widower')
+                                Late Wife Details <span class="badge bg-light text-dark ms-1">Optional / اختیاری</span>
+                            @else
+                                Spouse Details
+                            @endif
+                        </h6>
+                        <span dir="rtl" class="fw-semibold" id="spouseSectionUrdu">
+                            @if(old('marital_status') === 'widowed')
+                                مرحوم شوہر کی تفصیلات <small class="text-white-50">(اختیاری)</small>
+                            @elseif(old('marital_status') === 'widower')
+                                مرحومہ اہلیہ کی تفصیلات <small class="text-white-50">(اختیاری)</small>
+                            @else
+                                شریکِ حیات کی تفصیلات
+                            @endif
+                        </span>
                     </div>
                     <div class="card-body bg-light-subtle">
+                        <div id="widowedSpouseHint" class="alert alert-info py-2 small mb-3" style="display: {{ in_array(old('marital_status'), ['widowed', 'widower']) ? 'block' : 'none' }};">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <strong>Optional / اختیاری:</strong> Agar marhoom shohar / biwi ka record shajrah-e-nasab (Family Tree) ke liye darj karna chahein to yahan details likhein, warna ise <strong>khali chor dein</strong> (lazmi nahi hai).
+                        </div>
                         <div class="d-flex mb-3 gap-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="spouse_type" id="spouse_type_new" value="new" {{ old('spouse_type', 'new') == 'new' ? 'checked' : '' }}>
@@ -597,10 +617,31 @@
 
             // Toggle Spouse Section based on Marital Status
             function checkMaritalStatus() {
-                if ($('#marital_status').val() === 'married') {
+                const status = $('#marital_status').val();
+                if (status === 'married') {
                     $('#spouseSection').slideDown();
+                    $('#spouseSectionTitle').html('Spouse Details');
+                    $('#spouseSectionUrdu').html('شریکِ حیات کی تفصیلات');
+                    $('#widowedSpouseHint').slideUp();
+                } else if (status === 'widowed') {
+                    $('#spouseSection').slideDown();
+                    $('#spouseSectionTitle').html('Late Husband Details <span class="badge bg-light text-dark ms-1">Optional / اختیاری</span>');
+                    $('#spouseSectionUrdu').html('مرحوم شوہر کی تفصیلات <small class="text-white-50">(اختیاری)</small>');
+                    $('#widowedSpouseHint').slideDown();
+                    if ($('#gender').val() === 'female') {
+                        $('#spouse_gender').val('male');
+                    }
+                } else if (status === 'widower') {
+                    $('#spouseSection').slideDown();
+                    $('#spouseSectionTitle').html('Late Wife Details <span class="badge bg-light text-dark ms-1">Optional / اختیاری</span>');
+                    $('#spouseSectionUrdu').html('مرحومہ اہلیہ کی تفصیلات <small class="text-white-50">(اختیاری)</small>');
+                    $('#widowedSpouseHint').slideDown();
+                    if ($('#gender').val() === 'male') {
+                        $('#spouse_gender').val('female');
+                    }
                 } else {
                     $('#spouseSection').slideUp();
+                    $('#widowedSpouseHint').slideUp();
                 }
             }
             $('#marital_status').on('change', checkMaritalStatus);
@@ -625,6 +666,7 @@
                 } else if (memberGender === 'female') {
                     $('#spouse_gender').val('male');
                 }
+                checkMaritalStatus();
             });
 
             // Dynamic Children Logic
