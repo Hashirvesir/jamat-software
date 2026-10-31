@@ -44,6 +44,78 @@ class Member extends Model
         return $value ?: static::formatMembershipNumber($this->id);
     }
 
+    /**
+     * Search scope by Name, Phone, Member # (e.g. 0103, 103, SHJ-0103), CNIC, or B-Form
+     */
+    public function scopeSearch($query, ?string $term)
+    {
+        $term = trim((string)$term);
+        if ($term === '') {
+            return $query;
+        }
+
+        $numericTerm = preg_replace('/[^0-9]/', '', $term);
+        $intId = (is_numeric($numericTerm) && $numericTerm !== '') ? (int)$numericTerm : null;
+
+        return $query->where(function ($q) use ($term, $intId) {
+            $q->where('name', 'LIKE', "%{$term}%")
+              ->orWhere('phone', 'LIKE', "%{$term}%")
+              ->orWhere('cnic', 'LIKE', "%{$term}%")
+              ->orWhere('b_form_number', 'LIKE', "%{$term}%")
+              ->orWhere('membership_number', 'LIKE', "%{$term}%");
+
+            if ($intId) {
+                $q->orWhere('id', $intId);
+                $padded = str_pad($intId, 4, '0', STR_PAD_LEFT);
+                $q->orWhere('membership_number', 'LIKE', "%{$padded}%");
+            }
+        });
+    }
+
+    /**
+     * Comprehensive filter scope for members
+     */
+    public function scopeFilter($query, array $filters = [])
+    {
+        if (!empty($filters['community_id'])) {
+            $query->where('community_id', (int)$filters['community_id']);
+        }
+
+        if (!empty($filters['member_type'])) {
+            $query->where('member_type', $filters['member_type']);
+        }
+
+        if (!empty($filters['gender'])) {
+            $query->where('gender', $filters['gender']);
+        }
+
+        if (!empty($filters['marital_status'])) {
+            $query->where('marital_status', $filters['marital_status']);
+        }
+
+        if (!empty($filters['blood_group'])) {
+            $query->where('blood_group', $filters['blood_group']);
+        }
+
+        if (isset($filters['is_deceased']) && $filters['is_deceased'] !== '') {
+            if ($filters['is_deceased'] === '1' || $filters['is_deceased'] === true || $filters['is_deceased'] === 1) {
+                $query->where('is_deceased', true);
+            } elseif ($filters['is_deceased'] === '0' || $filters['is_deceased'] === false || $filters['is_deceased'] === 0) {
+                $query->where('is_deceased', false);
+            }
+        }
+
+        if (!empty($filters['education'])) {
+            $query->where('education', 'LIKE', '%' . trim($filters['education']) . '%');
+        }
+
+        if (!empty($filters['skill'])) {
+            $query->where('skill', 'LIKE', '%' . trim($filters['skill']) . '%');
+        }
+
+        return $query;
+    }
+
     public function community()
     {
         return $this->belongsTo(Community::class);

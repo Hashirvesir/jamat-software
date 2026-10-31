@@ -24,10 +24,23 @@ class MemberController extends Controller
         $this->middleware('permission:edit members')->only(['edit', 'update']);
         $this->middleware('permission:delete members')->only(['destroy']);
     }
-    public function index()
+    public function index(Request $request)
     {
-        $members = Member::with('community', 'parent', 'spouse')->latest('id')->paginate(10);
-        return view('members.index', compact('members'));
+        $search = trim((string)$request->input('search'));
+        $filters = $request->only([
+            'community_id', 'member_type', 'gender', 'marital_status',
+            'blood_group', 'is_deceased', 'education', 'skill'
+        ]);
+
+        $query = Member::with('community', 'parent', 'spouse')
+            ->search($search)
+            ->filter($filters)
+            ->latest('id');
+
+        $members = $query->paginate(15)->withQueryString();
+        $communities = Community::orderBy('name')->get();
+
+        return view('members.index', compact('members', 'communities', 'search', 'filters'));
     }
 
     public function create()
@@ -586,17 +599,20 @@ class MemberController extends Controller
 
     public function selectFamilyTree(Request $request)
     {
-        $query = Member::with('community');
         $search = trim((string) $request->input('search'));
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('cnic', 'LIKE', "%{$search}%")
-                    ->orWhere('b_form_number', 'LIKE', "%{$search}%");
-            });
+        $communityId = $request->input('community_id');
+
+        $query = Member::with('community')
+            ->search($search);
+
+        if (!empty($communityId)) {
+            $query->where('community_id', (int) $communityId);
         }
-        $members = $query->orderBy('name')->paginate(10)->withQueryString();
-        return view('members.select-family-tree', compact('members'));
+
+        $members = $query->orderBy('name')->paginate(15)->withQueryString();
+        $communities = Community::orderBy('name')->get();
+
+        return view('members.select-family-tree', compact('members', 'communities', 'search', 'communityId'));
     }
 
     public function familyTree(Member $member)
@@ -608,13 +624,14 @@ class MemberController extends Controller
 
     public function searchByCnic(Request $request)
     {
-        $cnic = $request->query('q');
-        $query = Member::where('cnic', 'LIKE', "%$cnic%");
+        $q = trim((string) $request->query('q'));
+        $query = Member::query();
         if ($request->filled('exclude')) {
             $query->where('id', '!=', $request->query('exclude'));
         }
-        $members = $query->select('id', 'name', 'cnic')
-            ->limit(10)
+        $members = $query->search($q)
+            ->select('id', 'name', 'cnic', 'membership_number')
+            ->limit(15)
             ->get();
         return response()->json($members);
     }
